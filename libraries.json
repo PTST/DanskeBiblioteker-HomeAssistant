@@ -1,0 +1,512 @@
+{
+    "albertslund": {
+        "branchId": "716500",
+        "name": "Albertslund",
+        "url": "https://albertslundbibliotek.dk"
+    },
+    "allerød": {
+        "branchId": "720100",
+        "name": "Allerød",
+        "url": "https://www.bibliotek.alleroed.dk"
+    },
+    "assens": {
+        "branchId": "742000",
+        "name": "Assens",
+        "url": "https://www.assensbib.dk"
+    },
+    "ballerup": {
+        "branchId": "715100",
+        "name": "Ballerup",
+        "url": "https://bib.ballerup.dk"
+    },
+    "billund": {
+        "branchId": "753000",
+        "name": "Billund",
+        "url": "https://billundbib.dk"
+    },
+    "bornholm": {
+        "branchId": "740000",
+        "name": "Bornholm",
+        "url": "https://bibliotek.brk.dk"
+    },
+    "brøndby": {
+        "branchId": "715300",
+        "name": "Brøndby",
+        "url": "https://www.brondby-bibliotekerne.dk"
+    },
+    "brønderslev": {
+        "branchId": "781000",
+        "name": "Brønderslev",
+        "url": "https://www.bronderslevbib.dk"
+    },
+    "býarbókasavnið": {
+        "branchId": "911116",
+        "name": "Býarbókasavnið",
+        "url": "http://www.bbs.fo/"
+    },
+    "dbc bibliotek (100450)": {
+        "branchId": "100450",
+        "name": "DBC bibliotek (100450)",
+        "url": "http://integrabib.dk"
+    },
+    "dbc testbibliotek": {
+        "branchId": "790900",
+        "name": "DBC Testbibliotek",
+        "url": "http://www.dbc.dk/VIP"
+    },
+    "dragør": {
+        "branchId": "715500",
+        "name": "Dragør",
+        "url": "https://www.drabib.dk"
+    },
+    "egedal": {
+        "branchId": "724000",
+        "name": "Egedal",
+        "url": "https://egedalbibliotekerne.dk"
+    },
+    "esbjerg": {
+        "branchId": "756100",
+        "name": "Esbjerg",
+        "url": "https://www.esbjergbibliotek.dk"
+    },
+    "favrskov": {
+        "branchId": "771000",
+        "name": "Favrskov",
+        "url": "https://favrskovbib.dk"
+    },
+    "faxe": {
+        "branchId": "732000",
+        "name": "Faxe",
+        "url": "https://www.faxebibliotek.dk"
+    },
+    "fredensborg": {
+        "branchId": "721000",
+        "name": "Fredensborg",
+        "url": "https://www.fredensborgbibliotekerne.dk"
+    },
+    "fredericia": {
+        "branchId": "760700",
+        "name": "Fredericia",
+        "url": "https://fredericiabib.dk"
+    },
+    "frederiksberg": {
+        "branchId": "714700",
+        "name": "Frederiksberg",
+        "url": "https://fkb.dk"
+    },
+    "frederikshavn": {
+        "branchId": "781300",
+        "name": "Frederikshavn",
+        "url": "https://bibl.frederikshavn.dk"
+    },
+    "frederikssund": {
+        "branchId": "725000",
+        "name": "Frederikssund",
+        "url": "https://www.bibliotekerne.frederikssund.dk"
+    },
+    "furesø": {
+        "branchId": "719000",
+        "name": "Furesø",
+        "url": "https://furbib.dk"
+    },
+    "faaborg-midtfyn bibliotekerne": {
+        "branchId": "743000",
+        "name": "Faaborg-Midtfyn Bibliotekerne",
+        "url": "https://fmbib.dk"
+    },
+    "gentofte": {
+        "branchId": "715700",
+        "name": "Gentofte",
+        "url": "https://genbib.dk"
+    },
+    "gladsaxe": {
+        "branchId": "715900",
+        "name": "Gladsaxe",
+        "url": "https://gladbib.dk"
+    },
+    "glostrup": {
+        "branchId": "716100",
+        "name": "Glostrup",
+        "url": "https://www.glostrupbib.dk"
+    },
+    "greve": {
+        "branchId": "725300",
+        "name": "Greve",
+        "url": "https://www.grevebibliotek.dk"
+    },
+    "gribskov": {
+        "branchId": "727000",
+        "name": "Gribskov",
+        "url": "https://www.gribskovbib.dk"
+    },
+    "guldborgsund": {
+        "branchId": "737600",
+        "name": "Guldborgsund",
+        "url": "https://guldbib.dk"
+    },
+    "haderslev": {
+        "branchId": "751000",
+        "name": "Haderslev",
+        "url": "https://haderslevbibliotekerne.dk"
+    },
+    "halsnæs": {
+        "branchId": "726000",
+        "name": "Halsnæs",
+        "url": "https://bibliotekerne.halsnaes.dk"
+    },
+    "hedensted": {
+        "branchId": "776600",
+        "name": "Hedensted",
+        "url": "https://hedenstedbib.dk"
+    },
+    "helsingør": {
+        "branchId": "721700",
+        "name": "Helsingør",
+        "url": "https://helsbib.dk"
+    },
+    "herlev": {
+        "branchId": "716300",
+        "name": "Herlev",
+        "url": "https://www.herlevbibliotek.dk"
+    },
+    "herning": {
+        "branchId": "765700",
+        "name": "Herning",
+        "url": "https://www.herningbib.dk"
+    },
+    "hillerød": {
+        "branchId": "721900",
+        "name": "Hillerød",
+        "url": "https://hilbib.dk"
+    },
+    "hjørring": {
+        "branchId": "786000",
+        "name": "Hjørring",
+        "url": "https://hjbib.dk"
+    },
+    "holbæk": {
+        "branchId": "731600",
+        "name": "Holbæk",
+        "url": "https://bibliotek.holbaek.dk"
+    },
+    "holstebro": {
+        "branchId": "766100",
+        "name": "Holstebro",
+        "url": "https://www.holstebrobibliotek.dk"
+    },
+    "horsens": {
+        "branchId": "761500",
+        "name": "Horsens",
+        "url": "https://horsensbibliotek.dk"
+    },
+    "hvidovre": {
+        "branchId": "716700",
+        "name": "Hvidovre",
+        "url": "https://www.hvidovrebib.dk"
+    },
+    "høje-taastrup": {
+        "branchId": "716900",
+        "name": "Høje-Taastrup",
+        "url": "https://bibliotek.htk.dk"
+    },
+    "hørsholm": {
+        "branchId": "722300",
+        "name": "Hørsholm",
+        "url": "https://biblioteket.horsholm.dk"
+    },
+    "ikast-brande": {
+        "branchId": "775600",
+        "name": "Ikast-Brande",
+        "url": "https://www.ikast-brandebibliotek.dk"
+    },
+    "ishøj": {
+        "branchId": "718300",
+        "name": "Ishøj",
+        "url": "https://www.ishojbib.dk"
+    },
+    "jammerbugt": {
+        "branchId": "784900",
+        "name": "Jammerbugt",
+        "url": "https://www.jammerbugtbibliotekerne.dk"
+    },
+    "kalundborg biblioteker": {
+        "branchId": "732600",
+        "name": "Kalundborg Biblioteker",
+        "url": "https://www.kalundborgbib.dk"
+    },
+    "kalaallit nunaat": {
+        "branchId": "911130",
+        "name": "Kalaallit Nunaat",
+        "url": "http://www.katak.gl/"
+    },
+    "kerteminde": {
+        "branchId": "744000",
+        "name": "Kerteminde",
+        "url": "https://kertemindebibliotekerne.dk"
+    },
+    "kolding": {
+        "branchId": "762100",
+        "name": "Kolding",
+        "url": "https://koldingbib.dk"
+    },
+    "københavn": {
+        "branchId": "710100",
+        "name": "København",
+        "url": "https://bibliotek.kk.dk"
+    },
+    "køge": {
+        "branchId": "725900",
+        "name": "Køge",
+        "url": "https://www.koegebib.dk"
+    },
+    "langeland": {
+        "branchId": "748200",
+        "name": "Langeland",
+        "url": "https://langelandbibliotek.dk"
+    },
+    "lejre bibliotek & arkiv": {
+        "branchId": "735000",
+        "name": "Lejre Bibliotek & Arkiv",
+        "url": "https://www.lejrebib.dk"
+    },
+    "lemvig": {
+        "branchId": "766500",
+        "name": "Lemvig",
+        "url": "https://www.lemvigbibliotek.dk"
+    },
+    "lolland": {
+        "branchId": "736000",
+        "name": "Lolland",
+        "url": "https://lollandbib.dk"
+    },
+    "lyngby-taarbæk": {
+        "branchId": "717300",
+        "name": "Lyngby-Taarbæk",
+        "url": "https://www.lyngbybib.dk"
+    },
+    "læsø": {
+        "branchId": "782500",
+        "name": "Læsø",
+        "url": "https://biblioteket.laesoe.dk"
+    },
+    "mariagerfjord": {
+        "branchId": "784600",
+        "name": "Mariagerfjord",
+        "url": "https://mariagerfjordbibliotekerne.dk"
+    },
+    "middelfart": {
+        "branchId": "741000",
+        "name": "Middelfart",
+        "url": "https://www.middelfartbibliotek.dk"
+    },
+    "morsø": {
+        "branchId": "777300",
+        "name": "Morsø",
+        "url": "https://www.bibliotekmorsoe.dk"
+    },
+    "norddjurs biblioteker": {
+        "branchId": "770700",
+        "name": "Norddjurs Biblioteker",
+        "url": "https://norddjursbib.dk"
+    },
+    "nordfyns biblioteker": {
+        "branchId": "748000",
+        "name": "Nordfyns Biblioteker",
+        "url": "https://www.nordfynsbib.dk"
+    },
+    "nyborg": {
+        "branchId": "745000",
+        "name": "Nyborg",
+        "url": "https://www.nyborgbibliotek.dk"
+    },
+    "næstved": {
+        "branchId": "737000",
+        "name": "Næstved",
+        "url": "https://www.naesbib.dk"
+    },
+    "odder": {
+        "branchId": "772700",
+        "name": "Odder",
+        "url": "https://www.bibliotek.odder.dk"
+    },
+    "odense": {
+        "branchId": "746100",
+        "name": "Odense",
+        "url": "https://www.odensebib.dk"
+    },
+    "odsherred": {
+        "branchId": "730600",
+        "name": "Odsherred",
+        "url": "https://odsbib.dk"
+    },
+    "randers": {
+        "branchId": "773000",
+        "name": "Randers",
+        "url": "https://www.randersbib.dk"
+    },
+    "rebild": {
+        "branchId": "784000",
+        "name": "Rebild",
+        "url": "https://www.rebildbib.dk"
+    },
+    "ringkøbing-skjern": {
+        "branchId": "776000",
+        "name": "Ringkøbing-Skjern",
+        "url": "https://riskbib.dk"
+    },
+    "ringsted": {
+        "branchId": "732900",
+        "name": "Ringsted",
+        "url": "https://ringstedbib.dk"
+    },
+    "roskilde": {
+        "branchId": "726500",
+        "name": "Roskilde",
+        "url": "https://roskildebib.dk"
+    },
+    "rudersdal": {
+        "branchId": "723000",
+        "name": "Rudersdal",
+        "url": "https://rudbib.dk"
+    },
+    "rødovre": {
+        "branchId": "717500",
+        "name": "Rødovre",
+        "url": "https://www.rdb.dk"
+    },
+    "samsø": {
+        "branchId": "774100",
+        "name": "Samsø",
+        "url": "https://bibliotek.samsoe.dk"
+    },
+    "silkeborg": {
+        "branchId": "774000",
+        "name": "Silkeborg",
+        "url": "https://silkeborgbib.dk"
+    },
+    "skanderborg": {
+        "branchId": "774600",
+        "name": "Skanderborg",
+        "url": "https://www.bibliotek.skanderborg.dk"
+    },
+    "skive": {
+        "branchId": "777900",
+        "name": "Skive",
+        "url": "https://www.skivebibliotek.dk"
+    },
+    "slagelse": {
+        "branchId": "733000",
+        "name": "Slagelse",
+        "url": "https://www.slagelsebib.dk"
+    },
+    "solrød": {
+        "branchId": "726900",
+        "name": "Solrød",
+        "url": "https://solbib.dk"
+    },
+    "sorø": {
+        "branchId": "734000",
+        "name": "Sorø",
+        "url": "https://www.soroebib.dk"
+    },
+    "stevns": {
+        "branchId": "733600",
+        "name": "Stevns",
+        "url": "https://www.stevnsbib.dk"
+    },
+    "struer": {
+        "branchId": "767100",
+        "name": "Struer",
+        "url": "https://www.struerbibliotek.dk"
+    },
+    "svendborg": {
+        "branchId": "747900",
+        "name": "Svendborg",
+        "url": "https://svendborgbibliotek.dk"
+    },
+    "syddjurs": {
+        "branchId": "770600",
+        "name": "Syddjurs",
+        "url": "https://syddjursbibliotek.dk"
+    },
+    "sydslesvig": {
+        "branchId": "700400",
+        "name": "Sydslesvig",
+        "url": "https://www.dcbib.dk"
+    },
+    "sønderborg": {
+        "branchId": "754000",
+        "name": "Sønderborg",
+        "url": "https://biblioteket.sonderborg.dk"
+    },
+    "thisted": {
+        "branchId": "778700",
+        "name": "Thisted",
+        "url": "https://bib.kulturrummet.dk"
+    },
+    "tønder": {
+        "branchId": "755000",
+        "name": "Tønder",
+        "url": "https://tbib.dk"
+    },
+    "tårnby": {
+        "branchId": "718500",
+        "name": "Tårnby",
+        "url": "https://taarnbybib.dk"
+    },
+    "vallensbæk": {
+        "branchId": "718700",
+        "name": "Vallensbæk",
+        "url": "https://kulturogborgerhus.vallensbaek.dk"
+    },
+    "varde": {
+        "branchId": "757300",
+        "name": "Varde",
+        "url": "https://www.vardebib.dk"
+    },
+    "vejen": {
+        "branchId": "757500",
+        "name": "Vejen",
+        "url": "https://vejbib.dk"
+    },
+    "vejle": {
+        "branchId": "763000",
+        "name": "Vejle",
+        "url": "https://vejlebib.dk"
+    },
+    "vesthimmerlands": {
+        "branchId": "782000",
+        "name": "Vesthimmerlands",
+        "url": "https://www.vhbib.dk"
+    },
+    "viborg": {
+        "branchId": "779100",
+        "name": "Viborg",
+        "url": "https://viborgbib.dk"
+    },
+    "vordingborg": {
+        "branchId": "739000",
+        "name": "Vordingborg",
+        "url": "https://www.vordingborgbibliotekerne.dk"
+    },
+    "ærø": {
+        "branchId": "749200",
+        "name": "Ærø",
+        "url": "https://www.arrebib.dk"
+    },
+    "aabenraa": {
+        "branchId": "758000",
+        "name": "Aabenraa",
+        "url": "https://www.aabenraabib.dk"
+    },
+    "aalborg": {
+        "branchId": "785100",
+        "name": "Aalborg",
+        "url": "https://www.aalborgbibliotekerne.dk"
+    },
+    "aarhus": {
+        "branchId": "775100",
+        "name": "Aarhus",
+        "url": "https://www.aakb.dk"
+    }
+}
