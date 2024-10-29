@@ -119,11 +119,14 @@ wheels = [
 name = "danskebiblioteker-homeassistant"
 version = "0.1.0"
 source = { virtual = "." }
+dependencies = [
+    { name = "httpx" },
+]
 
 [package.dependency-groups]
 dev = [
     { name = "black" },
-    { name = "httpx" },
+    { name = "isort" },
     { name = "pylint" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -132,11 +135,12 @@ dev = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "httpx", specifier = ">=0.27.2" }]
 
 [package.metadata.dependency-groups]
 dev = [
     { name = "black", specifier = ">=24.10.0" },
-    { name = "httpx", specifier = ">=0.27.2" },
+    { name = "isort", specifier = ">=5.13.2" },
     { name = "pylint", specifier = ">=3.3.1" },
     { name = "pytest", specifier = ">=8.3.3" },
     { name = "pytest-asyncio", specifier = ">=0.24.0" },
