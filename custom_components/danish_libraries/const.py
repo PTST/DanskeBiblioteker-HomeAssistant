@@ -1,10 +1,14 @@
 # pylint: disable=line-too-long
 import json
+import logging
 import pathlib
+from datetime import timedelta
 
 from .models import LibraryConfig
 
 DOMAIN = "danish_libraries"
+
+LOGGER = logging.getLogger(__package__)
 
 COMMON_LOGIN_HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -30,6 +34,12 @@ INFO_BASE_URL = "https://temp.fbi-api.dbc.dk"
 INFO_GRAPG_QL_QUERY = "query getManifestationViaMaterialByFaust($faust: String!) { manifestation(faust: $faust) { titles { full } creators { display } abstract pid } }"
 COVER_BASE_URL = "https://cover.dandigbib.org"
 PUBHUB_BASE_URL = "https://pubhub-openplatform.dbc.dk"
+DEFAULT_SCAN_INTERVAL = timedelta(minutes=1)  # TODO: change to 1 hour
+
+CONF_GET_EREOLEN = "get_ereolen"
+CONF_GET_RESERVATIONS = "get_reservations"
+CONF_MUNICIPALITY = "municipality"
+
 
 LIBRARIES: dict[str, LibraryConfig] = {}
 with open(

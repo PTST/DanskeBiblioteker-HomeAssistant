@@ -14,3 +14,13 @@ class Loan:
         self.description = " ".join(look_up_data["abstract"])
         self.is_renewable = loan_data["isRenewable"]
         self.loan_expire_date = date.fromisoformat(loan_data["loanDetails"]["dueDate"])
+
+    def to_json(self):
+        return {
+            "author": self.author,
+            "title": self.title,
+            "image_url": self.image_url,
+            "description": self.description,
+            "is_renewable": self.is_renewable,
+            "loan_expire_date": self.loan_expire_date,
+        }

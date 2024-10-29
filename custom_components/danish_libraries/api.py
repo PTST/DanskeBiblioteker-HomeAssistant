@@ -1,7 +1,13 @@
 import asyncio
 import re
 
-import httpx
+try:
+    #pylint: disable=invalid-name
+    from homeassistant.helpers.httpx_client import get_async_client, httpx
+except ImportError:
+    import httpx
+
+    get_async_client = httpx.AsyncClient
 
 from .const import (
     COMMON_LOGIN_BASE_URL,
@@ -33,7 +39,7 @@ def reauth_on_fail(func):
 
 
 class Library:
-    def __init__(self, municipality: str, user_id: str, pin: str):
+    def __init__(self, municipality: str, user_id: str, pin: str, hass):
         if municipality.lower() not in LIBRARIES.keys():
             raise ValueError(f'Municipality "{municipality}" not found in list')
         self.municipality = LIBRARIES[municipality.lower()]
@@ -42,6 +48,7 @@ class Library:
         self.session = None
         self.user_token = None
         self.library_token = None
+        self.hass = hass
 
     @property
     def user_bearer_token(self):
@@ -52,13 +59,16 @@ class Library:
         return f"Bearer {self.library_token}"
 
     async def authenticate(self):
-        if not self.session:
-            self.session = httpx.AsyncClient()
-        await self.session.get(self.municipality.url, follow_redirects=True)
+        self.session = (
+            get_async_client() if not self.hass else get_async_client(self.hass)
+        )
+        r = await self.session.get(self.municipality.url, follow_redirects=True)
+        r.raise_for_status()
         login_page_request = await self.session.get(
             f"{self.municipality.url}/login?current-path=/user/me/dashboard",
             follow_redirects=True,
         )
+        login_page_request.raise_for_status()
         login_page_text = login_page_request.text
         login_path = re.search(r"action=\"(.*?)\"", login_page_text).group(1)
         common_login_url = f"{COMMON_LOGIN_BASE_URL}{login_path}"
@@ -68,15 +78,17 @@ class Library:
             "loginBibDkUserId": self.user_id,
             "pincode": self.pin,
         }
-        await self.session.post(
+        r = await self.session.post(
             common_login_url,
             headers=COMMON_LOGIN_HEADERS,
             data=payload,
             follow_redirects=True,
         )
+        r.raise_for_status()
         token_response = await self.session.get(
             f"{self.municipality.url}/dpl-react/user-tokens", follow_redirects=False
         )
+        token_response.raise_for_status()
         token_text = token_response.text
         self.user_token = re.search(r"\"user\",\s*\"(.*?)\"", token_text).group(1)
         self.library_token = re.search(r"\"library\",\s*\"(.*?)\"", token_text).group(1)
@@ -89,6 +101,7 @@ class Library:
             headers=headers,
             follow_redirects=True,
         )
+        profile_response.raise_for_status()
         return ProfileInfo(profile_response.json()["patron"])
 
     @reauth_on_fail
@@ -101,6 +114,7 @@ class Library:
             follow_redirects=True,
             params=params,
         )
+        fee_response.raise_for_status()
         return fee_response.json()
 
     @reauth_on_fail
@@ -111,6 +125,7 @@ class Library:
             headers=headers,
             follow_redirects=True,
         )
+        loans_response.raise_for_status()
         tasks = []
         for res in loans_response.json():
             tasks.append(
@@ -129,6 +144,7 @@ class Library:
             headers=headers,
             follow_redirects=True,
         )
+        loans_response.raise_for_status()
         tasks = []
         for res in loans_response.json()["loans"]:
             tasks.append(
@@ -149,6 +165,7 @@ class Library:
             headers=headers,
             follow_redirects=True,
         )
+        reservations_response.raise_for_status()
         tasks = []
         for res in reservations_response.json():
             tasks.append(
@@ -167,6 +184,7 @@ class Library:
             headers=headers,
             follow_redirects=True,
         )
+        reservations_response.raise_for_status()
         tasks = []
         for res in reservations_response.json()["reservations"]:
             tasks.append(
@@ -188,6 +206,7 @@ class Library:
         info_response = await self.session.post(
             url, headers=headers, json=body, follow_redirects=True
         )
+        info_response.raise_for_status()
         info = info_response.json()
         image_url = await self.get_image_cover(
             info["data"]["manifestation"]["pid"], "pid"
@@ -208,6 +227,7 @@ class Library:
             headers=headers,
             follow_redirects=True,
         )
+        info_response.raise_for_status()
         info = info_response.json()
         image_url = await self.get_image_cover(identifier, "isbn")
         return output_type(
@@ -230,5 +250,6 @@ class Library:
             params=params,
             follow_redirects=True,
         )
+        image_response.raise_for_status()
         image_json = image_response.json()[0]
         return image_json["imageUrls"]["small"]["url"]
