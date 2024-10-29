@@ -29,7 +29,7 @@ CONF_GET_EREOLEN = "get_ereolen"
 CONF_GET_RESERVATIONS = "get_reservations"
 CONF_MUNICIPALITY = "municipality"
 COVER_BASE_URL = "https://cover.dandigbib.org"
-DEFAULT_SCAN_INTERVAL = timedelta(minutes=1)  # TODO: change to 1 hour
+DEFAULT_SCAN_INTERVAL = timedelta(minutes=60)
 DOMAIN = "danish_libraries"
 FBS_OPEN_PLATFORM_BASE_URL = "https://fbs-openplatform.dbc.dk"
 INFO_BASE_URL = "https://temp.fbi-api.dbc.dk"
