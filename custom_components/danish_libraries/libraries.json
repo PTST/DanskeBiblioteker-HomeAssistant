@@ -9,11 +9,6 @@
         "name": "Allerød",
         "url": "https://www.bibliotek.alleroed.dk"
     },
-    "assens": {
-        "branchId": "742000",
-        "name": "Assens",
-        "url": "https://www.assensbib.dk"
-    },
     "ballerup": {
         "branchId": "715100",
         "name": "Ballerup",
@@ -259,11 +254,6 @@
         "name": "Køge",
         "url": "https://www.koegebib.dk"
     },
-    "langeland": {
-        "branchId": "748200",
-        "name": "Langeland",
-        "url": "https://langelandbibliotek.dk"
-    },
     "lejre bibliotek & arkiv": {
         "branchId": "735000",
         "name": "Lejre Bibliotek & Arkiv",
@@ -309,11 +299,6 @@
         "name": "Norddjurs Biblioteker",
         "url": "https://norddjursbib.dk"
     },
-    "nordfyns biblioteker": {
-        "branchId": "748000",
-        "name": "Nordfyns Biblioteker",
-        "url": "https://www.nordfynsbib.dk"
-    },
     "nyborg": {
         "branchId": "745000",
         "name": "Nyborg",
@@ -328,11 +313,6 @@
         "branchId": "772700",
         "name": "Odder",
         "url": "https://www.bibliotek.odder.dk"
-    },
-    "odense": {
-        "branchId": "746100",
-        "name": "Odense",
-        "url": "https://www.odensebib.dk"
     },
     "odsherred": {
         "branchId": "730600",
@@ -418,11 +398,6 @@
         "branchId": "767100",
         "name": "Struer",
         "url": "https://www.struerbibliotek.dk"
-    },
-    "svendborg": {
-        "branchId": "747900",
-        "name": "Svendborg",
-        "url": "https://svendborgbibliotek.dk"
     },
     "syddjurs": {
         "branchId": "770600",
