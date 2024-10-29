@@ -6,10 +6,7 @@ from datetime import timedelta
 
 from .models import LibraryConfig
 
-DOMAIN = "danish_libraries"
-
-LOGGER = logging.getLogger(__package__)
-
+COMMON_LOGIN_BASE_URL = "https://login.bib.dk"
 COMMON_LOGIN_HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
     "Accept-Language": "en-US,en;q=0.9,da;q=0.8",
@@ -28,21 +25,21 @@ COMMON_LOGIN_HEADERS = {
     "sec-ch-ua-mobile": "?0",
     "sec-ch-ua-platform": '"Windows"',
 }
-COMMON_LOGIN_BASE_URL = "https://login.bib.dk"
-FBS_OPEN_PLATFORM_BASE_URL = "https://fbs-openplatform.dbc.dk"
-INFO_BASE_URL = "https://temp.fbi-api.dbc.dk"
-INFO_GRAPG_QL_QUERY = "query getManifestationViaMaterialByFaust($faust: String!) { manifestation(faust: $faust) { titles { full } creators { display } abstract pid } }"
-COVER_BASE_URL = "https://cover.dandigbib.org"
-PUBHUB_BASE_URL = "https://pubhub-openplatform.dbc.dk"
-DEFAULT_SCAN_INTERVAL = timedelta(minutes=1)  # TODO: change to 1 hour
-
 CONF_GET_EREOLEN = "get_ereolen"
 CONF_GET_RESERVATIONS = "get_reservations"
 CONF_MUNICIPALITY = "municipality"
-
+COVER_BASE_URL = "https://cover.dandigbib.org"
+DEFAULT_SCAN_INTERVAL = timedelta(minutes=1)  # TODO: change to 1 hour
+DOMAIN = "danish_libraries"
+FBS_OPEN_PLATFORM_BASE_URL = "https://fbs-openplatform.dbc.dk"
+INFO_BASE_URL = "https://temp.fbi-api.dbc.dk"
+INFO_GRAPG_QL_QUERY = "query getManifestationViaMaterialByFaust($faust: String!) { manifestation(faust: $faust) { titles { full } creators { display } abstract pid } }"
 
 LIBRARIES: dict[str, LibraryConfig] = {}
 with open(
     pathlib.Path(__file__).parent.joinpath("libraries.json"), "r", encoding="UTF8"
 ) as f:
     LIBRARIES = LibraryConfig.from_json(json.loads(f.read()))
+
+LOGGER = logging.getLogger(__package__)
+PUBHUB_BASE_URL = "https://pubhub-openplatform.dbc.dk"
