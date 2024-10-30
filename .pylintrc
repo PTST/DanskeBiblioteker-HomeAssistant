@@ -1,6 +1,6 @@
 [TYPECHECK]
 ignored-modules=voluptuous,homeassistant,LibreView
-disable=missing-docstring,too-few-public-methods,missing-module-docstring
+disable=missing-docstring,too-few-public-methods,missing-module-docstring,broad-exception-caught
 
 [SIMILARITIES]
 min-similarity-lines = 25

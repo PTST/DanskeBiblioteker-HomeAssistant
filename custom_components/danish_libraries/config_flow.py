@@ -69,6 +69,7 @@ class LibraryConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         self.get_ereolen = None
         self.get_reservations = None
         self.entry = None
+        self.user_real_name = None
 
     async def async_step_user(
         self, user_input: dict[str, any] | None = None
@@ -86,6 +87,8 @@ class LibraryConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                     hass=self.hass,
                 )
                 await library.authenticate()
+                profile_info = await library.get_profile_info()
+                self.user_real_name = profile_info.name
             except Exception as ex:  # pylint: disable=broad-except
                 LOGGER.debug("Could not log in to Library, %s", ex)
                 errors["base"] = "invalid_auth"
@@ -95,11 +98,13 @@ class LibraryConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                 self.pin = user_input[CONF_PASSWORD]
                 return await self.async_step_options()
 
+        municipalities = sorted([value.name for value in LIBRARIES.values()])
+
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_MUNICIPALITY): vol.In(sorted(LIBRARIES.keys())),
+                    vol.Required(CONF_MUNICIPALITY): vol.In(municipalities),
                     vol.Required(CONF_USERNAME): str,
                     vol.Required(CONF_PASSWORD): str,
                 }
@@ -114,7 +119,7 @@ class LibraryConfigFlowHandler(ConfigFlow, domain=DOMAIN):
             self.get_ereolen = user_input[CONF_GET_EREOLEN]
             self.get_reservations = user_input[CONF_GET_RESERVATIONS]
             return self.async_create_entry(
-                title="Library",
+                title=f"{self.user_real_name} - {self.municipality}",
                 data={
                     CONF_MUNICIPALITY: self.municipality,
                     CONF_USERNAME: self.user_id,
@@ -173,11 +178,13 @@ class LibraryConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                 )
             return self.async_abort(reason="reauth_successful")
 
+        municipalities = sorted([value.name for value in LIBRARIES.values()])
+
         return self.async_show_form(
             step_id="reauth_confirm",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_MUNICIPALITY): vol.In(sorted(LIBRARIES.keys())),
+                    vol.Required(CONF_MUNICIPALITY): vol.In(municipalities),
                     vol.Required(CONF_USERNAME): str,
                     vol.Required(CONF_PASSWORD): str,
                 }

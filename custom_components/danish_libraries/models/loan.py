@@ -1,3 +1,5 @@
+import json
+import logging
 from datetime import date
 
 
@@ -8,12 +10,20 @@ class Loan:
         look_up_data: dict[str, any],
         image_url: str,
     ):
-        self.author = ", ".join([c["display"] for c in look_up_data["creators"]])
-        self.title = " ".join(look_up_data["titles"]["full"])
-        self.image_url = image_url
-        self.description = " ".join(look_up_data["abstract"])
-        self.is_renewable = loan_data["isRenewable"]
-        self.loan_expire_date = date.fromisoformat(loan_data["loanDetails"]["dueDate"])
+        try:
+            self.author = ", ".join([c["display"] for c in look_up_data["creators"]])
+            self.title = " ".join(look_up_data["titles"]["full"])
+            self.image_url = image_url
+            self.description = " ".join(look_up_data["abstract"])
+            self.is_renewable = loan_data["isRenewable"]
+            self.due_date = date.fromisoformat(loan_data["loanDetails"]["dueDate"])
+        except Exception as e:
+            logger = logging.getLogger(__package__)
+            logger.warning(
+                "Could not parse data for Library Loan, input: %s",
+                json.dumps(loan_data),
+            )
+            logger.warning(e, exc_info=True)
 
     def to_json(self):
         return {
@@ -22,5 +32,5 @@ class Loan:
             "image_url": self.image_url,
             "description": self.description,
             "is_renewable": self.is_renewable,
-            "loan_expire_date": self.loan_expire_date,
+            "due_date": self.due_date,
         }
