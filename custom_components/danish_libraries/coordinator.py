@@ -72,7 +72,6 @@ class LibraryCoordinator(DataUpdateCoordinator):
             done, _ = await asyncio.wait(tasks, return_when="ALL_COMPLETED")
             for coroutine in done:
                 result = coroutine.result()
-                LOGGER.warning(str(result))
                 if isinstance(result, ProfileInfo):
                     data["profile_info"] = result
                     continue
@@ -95,7 +94,7 @@ class LibraryCoordinator(DataUpdateCoordinator):
                         )
 
         except Exception as ex:
-            LOGGER.error(ex)
+            LOGGER.exception(ex)
             raise
 
         return data
