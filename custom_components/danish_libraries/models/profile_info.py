@@ -1,12 +1,16 @@
+import json
+import logging
 import re
 from datetime import date
 
 
 class ProfileInfo:
     def __init__(self, data):
+        logging.getLogger(__package__).warning(json.dumps(data))
         self.birth_date = date.fromisoformat(data["birthday"])
         self.email_address: str = data["emailAddress"]
         self.name: str = data["name"]
+        self.patron_id: str = data["patronId"]
 
     @property
     def camel_cased_name(self):
