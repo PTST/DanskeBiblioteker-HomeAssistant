@@ -1,5 +1,7 @@
 # pylint: disable=line-too-long
 
+import hashlib
+
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -28,12 +30,17 @@ async def async_setup_entry(
 class LoanSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: LibraryCoordinator):
         super().__init__(coordinator)
+        self.coordinator = coordinator
         self.profile_info: ProfileInfo = coordinator.data["profile_info"]
         self.loans: list[Loan] = coordinator.data["loans"]
-        self._attr_unique_id = f"{self.profile_info.camel_cased_name}_{coordinator.library.municipality}_library_loans"
         self.next_due_loan = (
             min(self.loans, key=lambda x: x.due_date) if len(self.loans) > 0 else None
         )
+
+    @property
+    def unique_id(self):
+        uuid = f"{self.profile_info.patron_id}_library_loans"
+        return hashlib.sha1(uuid.encode("utf-8")).hexdigest()
 
     @property
     def name(self) -> str:
@@ -58,9 +65,9 @@ class LoanSensor(CoordinatorEntity, SensorEntity):
 class ReservationSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: LibraryCoordinator):
         super().__init__(coordinator)
+        self.coordinator = coordinator
         self.profile_info: ProfileInfo = coordinator.data["profile_info"]
         self.reservations: list[Reservation] = coordinator.data["reservations"]
-        self._attr_unique_id = f"{self.profile_info.camel_cased_name}_{coordinator.library.municipality}_library_reservations"
         self.ready_for_pickup = [
             res for res in self.reservations if res.pickup_deadline is not None
         ]
@@ -74,6 +81,11 @@ class ReservationSensor(CoordinatorEntity, SensorEntity):
         if len(self.in_queue) > 0:
             self.in_queue.sort(key=lambda item: item.number_in_queue)
             self.next_in_queue = min(self.in_queue, key=lambda x: x.number_in_queue)
+
+    @property
+    def unique_id(self):
+        uuid = f"{self.profile_info.patron_id}_library_reservations"
+        return hashlib.sha1(uuid.encode("utf-8")).hexdigest()
 
     @property
     def name(self) -> str:
@@ -99,12 +111,17 @@ class ReservationSensor(CoordinatorEntity, SensorEntity):
 class EreolenLoanSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: LibraryCoordinator):
         super().__init__(coordinator)
+        self.coordinator = coordinator
         self.profile_info: ProfileInfo = coordinator.data["profile_info"]
         self.loans: list[EreolenLoan] = coordinator.data["ereolen_loans"]
-        self._attr_unique_id = f"{self.profile_info.camel_cased_name}_{coordinator.library.municipality}_ereolen_loans"
         self.next_due_loan = (
             min(self.loans, key=lambda x: x.due_date) if len(self.loans) > 0 else None
         )
+
+    @property
+    def unique_id(self):
+        uuid = f"{self.profile_info.patron_id}_ereolen_loan"
+        return hashlib.sha1(uuid.encode("utf-8")).hexdigest()
 
     @property
     def name(self) -> str:
@@ -129,11 +146,16 @@ class EreolenLoanSensor(CoordinatorEntity, SensorEntity):
 class EreolenReservationSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: LibraryCoordinator):
         super().__init__(coordinator)
+        self.coordinator = coordinator
         self.profile_info: ProfileInfo = coordinator.data["profile_info"]
         self.reservations: list[EreolenReservation] = coordinator.data[
             "ereolen_reservations"
         ]
-        self._attr_unique_id = f"{self.profile_info.camel_cased_name}_{coordinator.library.municipality}_ereolen_reservations"
+
+    @property
+    def unique_id(self):
+        uuid = f"{self.profile_info.patron_id}_ereolen_reservations"
+        return hashlib.sha1(uuid.encode("utf-8")).hexdigest()
 
     @property
     def name(self) -> str:

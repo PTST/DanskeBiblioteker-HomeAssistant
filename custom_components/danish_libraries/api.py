@@ -35,6 +35,11 @@ def reauth_on_fail(func):
             if e.response.status_code == 401:
                 await library.authenticate()
                 return await func(*args)
+            if e.response.status_code >= 500:
+                LOGGER.exception(e)
+                LOGGER.error("Unknown error, retrying in 30sec")
+                await asyncio.sleep(30)
+                return await func(*args)
             raise e
         except httpx.ConnectError as e:
             LOGGER.exception(e)
