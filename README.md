@@ -1,9 +1,109 @@
-
+<!-- ![Current Release](https://img.shields.io/github/release/PTST/DanskeBiblioteker-HomeAssistant/all.svg?style=plastic)
+![Github All Releases](https://img.shields.io/github/downloads/PTST/DanskeBiblioteker-HomeAssistant/total.svg?style=plastic) -->
 
 # DanskeBiblioteker-HomeAssistant
 Install the integration either manually or via HACS by adding this repo as a custom repo
 Add the G4S integration by following the config flow in settings/integrations in your Home Assistant instance
 Login to your G4S smart alarm account with you username and password
+
+## Spported libraries:
+* Albertslund
+* Allerød
+* Ballerup
+* Billund
+* Bornholm
+* Brøndby
+* Brønderslev
+* Býarbókasavnið
+* DBC bibliotek (100450)
+* DBC Testbibliotek
+* Dragør
+* Egedal
+* Esbjerg
+* Favrskov
+* Faxe
+* Fredensborg
+* Fredericia
+* Frederiksberg
+* Frederikshavn
+* Frederikssund
+* Furesø
+* Faaborg-Midtfyn Bibliotekerne
+* Gentofte
+* Gladsaxe
+* Glostrup
+* Greve
+* Gribskov
+* Guldborgsund
+* Haderslev
+* Halsnæs
+* Hedensted
+* Helsingør
+* Herlev
+* Herning
+* Hillerød
+* Hjørring
+* Holbæk
+* Holstebro
+* Horsens
+* Hvidovre
+* Høje-Taastrup
+* Hørsholm
+* Ikast-Brande
+* Ishøj
+* Jammerbugt
+* Kalundborg Biblioteker
+* Kalaallit Nunaat
+* Kerteminde
+* Kolding
+* København
+* Køge
+* Lejre Bibliotek & Arkiv
+* Lemvig
+* Lolland
+* Lyngby-Taarbæk
+* Læsø
+* Mariagerfjord
+* Middelfart
+* Morsø
+* Norddjurs Biblioteker
+* Nyborg
+* Næstved
+* Odder
+* Odsherred
+* Randers
+* Rebild
+* Ringkøbing-Skjern
+* Ringsted
+* Roskilde
+* Rudersdal
+* Rødovre
+* Samsø
+* Silkeborg
+* Skanderborg
+* Skive
+* Slagelse
+* Solrød
+* Sorø
+* Stevns
+* Struer
+* Syddjurs
+* Sydslesvig
+* Sønderborg
+* Thisted
+* Tønder
+* Tårnby
+* Vallensbæk
+* Varde
+* Vejen
+* Vejle
+* Vesthimmerlands
+* Viborg
+* Vordingborg
+* Ærø
+* Aabenraa
+* Aalborg
+* Aarhus
 
 ## Example cards
 ### Requirements:
