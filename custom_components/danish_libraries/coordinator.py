@@ -49,12 +49,11 @@ class LibraryCoordinator(DataUpdateCoordinator):
                 asyncio.get_event_loop().create_task(self.library.get_profile_info())
             )
             if self.entry.data[CONF_GET_RESERVATIONS]:
-                # tasks.append(
-                #     asyncio.get_event_loop().create_task(
-                #         self.library.get_reservations()
-                #     )
-                # )
-                pass
+                tasks.append(
+                    asyncio.get_event_loop().create_task(
+                        self.library.get_reservations()
+                    )
+                )
             if self.entry.data[CONF_GET_EREOLEN]:
                 tasks.append(
                     asyncio.get_event_loop().create_task(
