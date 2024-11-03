@@ -6,7 +6,7 @@ from datetime import date
 
 class ProfileInfo:
     def __init__(self, data):
-        logging.getLogger(__package__).warning(json.dumps(data))
+        logging.getLogger(__package__).debug(json.dumps(data))
         self.birth_date = date.fromisoformat(data["birthday"])
         self.email_address: str = data["emailAddress"]
         self.name: str = data["name"]
