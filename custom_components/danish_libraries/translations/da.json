@@ -1,0 +1,51 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Danske Biblioteker opsætning",
+                "description": "Log på din biblioteks konto",
+                "data": {
+                    "municipality": "Kommune / bibliotek",
+                    "username": "Brugernavn / CPR nr.",
+                    "password": "Password"
+                }
+            },
+            "async_step_options": {
+                "title": "Danske Biblioteker opsætning",
+                "description": "Indstillinger for integrationen",
+                "data": {
+                    "get_reservations": "Inkluder data for reserveringer",
+                    "get_ereolen": "Inkluder data fra e-reolen"
+                }
+            },
+            "reauth_confirm": {
+                "description": "Log på igen med din biblioteks konto",
+                "data": {
+                    "municipality": "Kommune / bibliotek",
+                    "username": "Brugernavn / CPR nr.",
+                    "password": "Password"
+                }
+            }
+        },
+        "error": {
+            "invalid_auth": "Ugyldige logininformationer",
+            "unknown": "Ukendt fejl"
+        },
+        "abort": {
+            "already_configured": "Konto er allerede konfigureret",
+            "reauth_successful": "Genpålogning gennemført succesfuldt"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Danske Biblioteker indstillinger",
+                "description": "Indstillinger for integrationen",
+                "data": {
+                    "get_reservations": "Inkluder data for reserveringer",
+                    "get_ereolen": "Inkluder data fra e-reolen"
+                }
+            }
+        }
+    }
+}

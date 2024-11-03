@@ -1,0 +1,51 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Danish Libraries Configuration",
+                "description": "Sign-in with your Danish Library account",
+                "data": {
+                    "municipality": "Municipality / library",
+                    "username": "Username / CPR No",
+                    "password": "Password"
+                }
+            },
+            "async_step_options": {
+                "title": "Danish Libraries Configuration",
+                "description": "Set settings for the Danish Libraries integration.",
+                "data": {
+                    "get_reservations": "Include data for library reservations",
+                    "get_ereolen": "Include data from e-reolen"
+                }
+            },
+            "reauth_confirm": {
+                "description": "Re-authenticate with your Danish Library account.",
+                "data": {
+                    "municipality": "Municipality / library",
+                    "username": "Username / CPR No",
+                    "password": "Password"
+                }
+            }
+        },
+        "error": {
+            "invalid_auth": "Invalid authentication",
+            "unknown": "Unexpected error"
+        },
+        "abort": {
+            "already_configured": "Account is already configured",
+            "reauth_successful": "Re-authentication was successful"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Danish Libraries Configuration",
+                "description": "Change settings for the Danish Libraries integration.",
+                "data": {
+                    "get_reservations": "Include data for library reservations",
+                    "get_ereolen": "Include data from e-reolen"
+                }
+            }
+        }
+    }
+}
