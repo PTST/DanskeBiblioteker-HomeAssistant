@@ -120,7 +120,9 @@ class Library:
             token_text = token_response.text
 
             self.user_token = re.search(r"\"user\",\s*\"(.*?)\"", token_text).group(1)
-            self.library_token = re.search(r"\"library\",\s*\"(.*?)\"", token_text).group(1)
+            self.library_token = re.search(
+                r"\"library\",\s*\"(.*?)\"", token_text
+            ).group(1)
         except httpx.HTTPStatusError as e:
             if e.response.status_code >= 500:
                 LOGGER.debug(e, exc_info=True)
