@@ -10,7 +10,7 @@ Login to your G4S smart alarm account with you username and password
 [lovelace-auto-entities](https://github.com/thomasloven/lovelace-auto-entities)    
 [lovelace-template-entity-row](https://github.com/thomasloven/lovelace-template-entity-row)  
 
-Reservations available for pickup:
+Reservations available for pickup:  
 ![image](https://github.com/user-attachments/assets/0a1977e2-0d08-49f9-9a9a-9292bdd40af1)
 
 ``` yaml
@@ -46,7 +46,7 @@ sort:
   reverse: false
 ```
 
-Reservered items:
+Reservered items:  
 ![image](https://github.com/user-attachments/assets/6f0b8f9a-cc9f-4143-a818-2e29ceca84e1)
 
 ``` yaml
@@ -83,7 +83,7 @@ sort:
   reverse: false
 ```
 
-Loaned items:
+Loaned items:  
 ![image](https://github.com/user-attachments/assets/e2cdf47a-6b3f-40de-bb30-9fa50d62ed91)
 
 ``` yaml
