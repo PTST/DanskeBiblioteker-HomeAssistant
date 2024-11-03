@@ -1,4 +1,5 @@
-
+![Current Release](https://img.shields.io/github/release/PTST/DanskeBiblioteker-HomeAssistant/all.svg?style=plastic)
+![Github All Releases](https://img.shields.io/github/downloads/PTST/DanskeBiblioteker-HomeAssistant/total.svg?style=plastic)
 
 # DanskeBiblioteker-HomeAssistant
 Install the integration either manually or via HACS by adding this repo as a custom repo
