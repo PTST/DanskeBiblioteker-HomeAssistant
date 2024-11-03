@@ -68,6 +68,7 @@ class ReservationSensor(CoordinatorEntity, SensorEntity):
         self.coordinator = coordinator
         self.profile_info: ProfileInfo = coordinator.data["profile_info"]
         self.reservations: list[Reservation] = coordinator.data["reservations"]
+        self.next_in_queue: Reservation = None
         self.ready_for_pickup = [
             res for res in self.reservations if res.pickup_deadline is not None
         ]
