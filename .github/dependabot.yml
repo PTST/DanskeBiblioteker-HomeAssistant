@@ -6,6 +6,5 @@
 version: 2
 updates:
   - package-ecosystem: "pip"
-    directory: "/custom_components/danish_libraries/" 
     schedule:
       interval: "weekly"
