@@ -36,19 +36,19 @@ def reauth_on_fail(func):
                 await library.authenticate()
                 return await func(*args)
             if e.response.status_code >= 500:
-                LOGGER.exception(e)
-                LOGGER.error("Unknown error, retrying in 30sec")
+                LOGGER.debug(e, exc_info=True)
+                LOGGER.debug("Unknown error, retrying in 30sec")
                 await asyncio.sleep(30)
                 return await func(*args)
             raise e
         except httpx.ConnectError as e:
-            LOGGER.exception(e)
-            LOGGER.error("Connect error, retrying in 30sec")
+            LOGGER.debug(e)
+            LOGGER.debug("Connect error, retrying in 30sec", exc_info=True)
             await asyncio.sleep(30)
             return await func(*args)
         except Exception as e:
-            LOGGER.exception(e)
-            LOGGER.error("Unknown error, retrying in 30sec")
+            LOGGER.debug(e)
+            LOGGER.debug("Unknown error, retrying in 30sec", exc_info=True)
             await asyncio.sleep(30)
             return await func(*args)
 
@@ -76,50 +76,68 @@ class Library:
         return f"Bearer {self.library_token}"
 
     async def authenticate(self):
-        LOGGER.debug("Authenticating")
-        self.session = (
-            create_async_httpx_client()
-            if not self.hass
-            else create_async_httpx_client(self.hass)
-        )
-        self.session.cookies.clear()
-        r = await self.session.get(
-            self.municipality.url, follow_redirects=True, timeout=None
-        )
-        r.raise_for_status()
-        login_page_request = await self.session.get(
-            f"{self.municipality.url}/login?current-path=/user/me/dashboard",
-            follow_redirects=True,
-            timeout=None,
-        )
-        login_page_request.raise_for_status()
-        login_page_text = login_page_request.text
-        login_path = re.search(r"action=\"(.*?)\"", login_page_text).group(1)
-        common_login_url = f"{COMMON_LOGIN_BASE_URL}{login_path}"
-        payload = {
-            "agency": self.municipality.branch_id,
-            "libraryName": self.municipality.name,
-            "loginBibDkUserId": self.user_id,
-            "pincode": self.pin,
-        }
-        r = await self.session.post(
-            common_login_url,
-            headers=COMMON_LOGIN_HEADERS,
-            data=payload,
-            follow_redirects=True,
-            timeout=None,
-        )
-        r.raise_for_status()
-        token_response = await self.session.get(
-            f"{self.municipality.url}/dpl-react/user-tokens",
-            follow_redirects=False,
-            timeout=None,
-        )
-        token_response.raise_for_status()
-        token_text = token_response.text
+        try:
+            LOGGER.debug("Authenticating")
+            self.session = (
+                create_async_httpx_client()
+                if not self.hass
+                else create_async_httpx_client(self.hass)
+            )
+            self.session.cookies.clear()
+            r = await self.session.get(
+                self.municipality.url, follow_redirects=True, timeout=None
+            )
+            r.raise_for_status()
+            login_page_request = await self.session.get(
+                f"{self.municipality.url}/login?current-path=/user/me/dashboard",
+                follow_redirects=True,
+                timeout=None,
+            )
+            login_page_request.raise_for_status()
+            login_page_text = login_page_request.text
+            login_path = re.search(r"action=\"(.*?)\"", login_page_text).group(1)
+            common_login_url = f"{COMMON_LOGIN_BASE_URL}{login_path}"
+            payload = {
+                "agency": self.municipality.branch_id,
+                "libraryName": self.municipality.name,
+                "loginBibDkUserId": self.user_id,
+                "pincode": self.pin,
+            }
+            r = await self.session.post(
+                common_login_url,
+                headers=COMMON_LOGIN_HEADERS,
+                data=payload,
+                follow_redirects=True,
+                timeout=None,
+            )
+            r.raise_for_status()
+            token_response = await self.session.get(
+                f"{self.municipality.url}/dpl-react/user-tokens",
+                follow_redirects=False,
+                timeout=None,
+            )
+            token_response.raise_for_status()
+            token_text = token_response.text
 
-        self.user_token = re.search(r"\"user\",\s*\"(.*?)\"", token_text).group(1)
-        self.library_token = re.search(r"\"library\",\s*\"(.*?)\"", token_text).group(1)
+            self.user_token = re.search(r"\"user\",\s*\"(.*?)\"", token_text).group(1)
+            self.library_token = re.search(r"\"library\",\s*\"(.*?)\"", token_text).group(1)
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code >= 500:
+                LOGGER.debug(e, exc_info=True)
+                LOGGER.debug("Unknown error, retrying in 30sec")
+                await asyncio.sleep(30)
+                return await self.authenticate()
+            raise e
+        except httpx.ConnectError as e:
+            LOGGER.debug(e)
+            LOGGER.debug("Connect error, retrying in 30sec", exc_info=True)
+            await asyncio.sleep(30)
+            return await self.authenticate()
+        except Exception as e:
+            LOGGER.debug(e)
+            LOGGER.debug("Unknown error, retrying in 30sec", exc_info=True)
+            await asyncio.sleep(30)
+            return await self.authenticate()
 
     @reauth_on_fail
     async def get_profile_info(self) -> ProfileInfo:
