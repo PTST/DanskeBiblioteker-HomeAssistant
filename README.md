@@ -123,14 +123,14 @@ card:
   title: Bøger klar til afhentning
 filter:
   template: >-
-    {% set SENSORP = 'sensor.patrick_toft_steffensen_library_reservations' -%}
-    {% set SENSORA = 'sensor.anna_library_reservations' -%}
-    {% set BOOKS = states[SENSORA].attributes.data
-    +states[SENSORP].attributes.data %}
-
-    {% set READY_FOR_PICKUP = BOOKS|rejectattr('pickup_deadline','none') %}
-
-    {%- for book in READY_FOR_PICKUP|sort(attribute='days_left_for_pickup') -%}
+    {% set data = namespace(books=[]) %} {% for sensor in states.sensor %}
+      {% if 'type' in sensor.attributes.keys() and sensor.attributes.type == 'library_reservation' and sensor.attributes.data|length > 0 %}
+        {% set data.books = data.books + sensor.attributes.data %}
+      {% endif %}
+    {% endfor %}
+    {% set BOOKS = data.books %}
+    {% set READY_FOR_PICKUP = BOOKS|rejectattr('pickup_deadline','none') %} {%-
+    for book in READY_FOR_PICKUP|sort(attribute='days_left_for_pickup') -%}
       {%- set IMAGE = book.image_url -%}
       {%- set AUTHOR = book.author -%}
       {%- set STATE = 'Afhent senest: ' ~ book.pickup_deadline if book.pickup_deadline else book.number_in_queue -%}
@@ -158,15 +158,14 @@ card:
   type: entities
   title: Reserverede biblioteksbøger
 filter:
-  template: >-
-    {% set SENSORP = 'sensor.patrick_toft_steffensen_library_reservations' -%}
-    {% set SENSORA = 'sensor.anna_library_reservations' -%}
-
-    {% set BOOKS = states[SENSORA].attributes.data
-    +states[SENSORP].attributes.data %}
-
+  template: |-
+    {% set data = namespace(books=[]) %} {% for sensor in states.sensor %}
+      {% if 'type' in sensor.attributes.keys() and sensor.attributes.type == 'library_reservation' and sensor.attributes.data|length > 0 %}
+        {% set data.books = data.books + sensor.attributes.data %}
+      {% endif %}
+    {% endfor %}
+    {% set BOOKS = data.books %}
     {% set IN_QUEUE = BOOKS|selectattr('pickup_deadline','none') %}
-
     {%- for book in IN_QUEUE|sort(attribute='days_left_for_pickup') -%}
       {%- set IMAGE = book.image_url -%}
       {%- set AUTHOR = book.author -%}
@@ -196,24 +195,29 @@ card:
   title: Lånte biblioteksbøger
 filter:
   template: |-
-    {% set SENSORP = 'sensor.patrick_toft_steffensen_library_loans' -%}
-    {% set SENSORA = 'sensor.anna_library_loans' -%}
-     {% set BOOKS = states[SENSORP].attributes.data + states[SENSORA].attributes.data %}
-    {%- for book in BOOKS|sort(attribute='due_date') -%}
-      {%- set DUEDATE = as_datetime(book.due_date) -%}
-      {%- set IMAGE = book.image_url -%}
-      {%- set AUTHOR = book.author -%}
-      {{
-            {
-              'type': 'custom:template-entity-row',
-              'state': time_until(DUEDATE),
-              'name': book.title|truncate(67,true,'…'),
-              'secondary': AUTHOR,
-              'icon': 'mdi:book-open-page-variant',
-              'image': IMAGE,
-            }
-          }},
-    {%- endfor %}
+    {% set data = namespace(books=[]) %}
+     {% for sensor in states.sensor %}
+       {% if 'type' in sensor.attributes.keys() and sensor.attributes.type == 'library_loan' and sensor.attributes.data|length > 0 %}
+         {% set data.books = data.books + sensor.attributes.data %}
+       {% endif %}
+     {% endfor %}
+     
+     {% set BOOKS = data.books|list %}
+     {%- for book in BOOKS|sort(attribute='due_date') -%}
+       {%- set DUEDATE = as_datetime(book.due_date) -%}
+       {%- set IMAGE = book.image_url -%}
+       {%- set AUTHOR = book.author -%}
+       {{
+             {
+               'type': 'custom:template-entity-row',
+               'state': time_until(DUEDATE),
+               'name': book.title|truncate(67,true,'…'),
+               'secondary': AUTHOR,
+               'icon': 'mdi:book-open-page-variant',
+               'image': IMAGE,
+             }
+           }},
+     {%- endfor %}
 sort:
   reverse: false
 ```
