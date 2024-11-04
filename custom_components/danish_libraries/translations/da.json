@@ -10,7 +10,7 @@
                     "password": "Password"
                 }
             },
-            "async_step_options": {
+            "options": {
                 "title": "Danske Biblioteker opsætning",
                 "description": "Indstillinger for integrationen",
                 "data": {
