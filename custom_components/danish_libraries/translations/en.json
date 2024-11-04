@@ -10,7 +10,7 @@
                     "password": "Password"
                 }
             },
-            "async_step_options": {
+            "options": {
                 "title": "Danish Libraries Configuration",
                 "description": "Set settings for the Danish Libraries integration.",
                 "data": {
