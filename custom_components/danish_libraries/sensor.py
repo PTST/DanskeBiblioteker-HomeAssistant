@@ -55,6 +55,7 @@ class LoanSensor(CoordinatorEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, int | float]:
         return {
+            "type": "library_loan",
             "next_due_loan": (
                 self.next_due_loan.to_json() if self.next_due_loan is not None else None
             ),
@@ -101,6 +102,7 @@ class ReservationSensor(CoordinatorEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, int | float]:
         return {
+            "type": "library_reservation",
             "next_in_queue": (
                 self.next_in_queue.to_json() if self.next_in_queue else None
             ),
@@ -137,6 +139,7 @@ class EreolenLoanSensor(CoordinatorEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, int | float]:
         return {
+            "type": "ereolen_loan",
             "next_due_loan": (
                 self.next_due_loan.to_json() if self.next_due_loan is not None else None
             ),
@@ -171,6 +174,7 @@ class EreolenReservationSensor(CoordinatorEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, int | float]:
         return {
+            "type": "ereolen_reservation",
             "next_in_queue": None,
             "data": [res.to_json() for res in self.reservations],
         }
