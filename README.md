@@ -6,6 +6,9 @@ Install the integration either manually or via HACS by adding this repo as a cus
 Add the Danske Biblioteker integration by following the config flow in settings/integrations in your Home Assistant instance
 Login to your library account with you username and password
 
+After installing from hacs, setup can be started from this link:
+[![](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=danish_libraries)
+
 ## Spported libraries:
 * Albertslund
 * Allerød
