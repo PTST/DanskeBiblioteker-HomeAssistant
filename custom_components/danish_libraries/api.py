@@ -253,28 +253,25 @@ class Library:
             "variables": {"faust": identifier},
         }
         tasks = []
-        url1 = f"{INFO_BASE_URL}/fbcms-vis/graphql"
-        url2 = f"{INFO_BASE_URL}/DDFCMS-VIS/graphql"
-
-        tasks.append(
-            asyncio.get_event_loop().create_task(
-                self.session.post(
-                    url1, headers=headers, json=body, follow_redirects=True
+        urls = [
+            f"{INFO_BASE_URL}/fbcms-vis/graphql",
+            f"{INFO_BASE_URL}/DDFCMS-VIS/graphql",
+            f"{INFO_BASE_URL}/opac/graphql",
+        ]
+        for url in urls:
+            tasks.append(
+                asyncio.get_event_loop().create_task(
+                    self.session.post(
+                        url, headers=headers, json=body, follow_redirects=False
+                    )
                 )
             )
-        )
-        tasks.append(
-            asyncio.get_event_loop().create_task(
-                self.session.post(
-                    url2, headers=headers, json=body, follow_redirects=True
-                )
-            )
-        )
         pid = None
         info = None
-        results = await self.unpack_results(tasks)
+        results: list[httpx.Response] = await self.unpack_results(tasks)
         for res in results:
-            res.raise_for_status()
+            if res.status_code != 200:
+                continue
             info = Library.get_nested_value(res.json(), ["data", "manifestation"])
             if info is None:
                 continue
