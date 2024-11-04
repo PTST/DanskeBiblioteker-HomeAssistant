@@ -68,7 +68,7 @@ body:
     attributes:
       label: Anything in the logs that might be useful for us?
       description: For example, error message, or stack traces.
-      render: txt
+      render: text
   - type: textarea
     attributes:
       label: Additional information
