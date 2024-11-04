@@ -252,18 +252,46 @@ class Library:
             "query": INFO_GRAPG_QL_QUERY,
             "variables": {"faust": identifier},
         }
-        url = f"{INFO_BASE_URL}/fbcms-vis/graphql"
-        info_response = await self.session.post(
-            url, headers=headers, json=body, follow_redirects=True
+        tasks = []
+        url1 = f"{INFO_BASE_URL}/fbcms-vis/graphql"
+        url2 = f"{INFO_BASE_URL}/DDFCMS-VIS/graphql"
+
+        tasks.append(
+            asyncio.get_event_loop().create_task(
+                self.session.post(
+                    url1, headers=headers, json=body, follow_redirects=True
+                )
+            )
         )
-        info_response.raise_for_status()
-        info = info_response.json()
-        image_url = await self.get_image_cover(
-            info["data"]["manifestation"]["pid"], "pid"
+        tasks.append(
+            asyncio.get_event_loop().create_task(
+                self.session.post(
+                    url2, headers=headers, json=body, follow_redirects=True
+                )
+            )
         )
+        pid = None
+        info = None
+        results = await self.unpack_results(tasks)
+        for res in results:
+            res.raise_for_status()
+            info = Library.get_nested_value(res.json(), ["data", "manifestation"])
+            if info is None:
+                continue
+            pid = info.get("pid")
+            if pid is not None:
+                break
+
+        if pid is None:
+            LOGGER.error(
+                "Could not extract PID from object, maybe this municipality uses a new url. MUNICIPALITY=%s",
+                self.municipality,
+            )
+
+        image_url = await self.get_image_cover(pid, "pid")
         return output_type(
             original_object,
-            info["data"]["manifestation"],
+            info,
             image_url,
         )
 
@@ -314,3 +342,11 @@ class Library:
             if ex := x.exception():
                 LOGGER.exception(ex)
         return [x.result() for x in done]
+
+    @staticmethod
+    def get_nested_value(d: dict[str, any], keys: list[str]) -> any:
+        next_key = keys.pop(0)
+        value = d[next_key]
+        if len(keys) == 0 or value is None:
+            return value
+        return Library.get_nested_value(value, keys)
