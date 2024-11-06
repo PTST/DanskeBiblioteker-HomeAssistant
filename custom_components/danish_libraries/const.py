@@ -43,3 +43,4 @@ with open(
 
 LOGGER = logging.getLogger(__package__)
 PUBHUB_BASE_URL = "https://pubhub-openplatform.dbc.dk"
+DEFAULT_IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/128px-No-Image-Placeholder.svg.png"
