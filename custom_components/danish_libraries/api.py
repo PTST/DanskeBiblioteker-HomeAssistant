@@ -13,6 +13,7 @@ from .const import (
     COMMON_LOGIN_BASE_URL,
     COMMON_LOGIN_HEADERS,
     COVER_BASE_URL,
+    DEFAULT_IMAGE_URL,
     FBS_OPEN_PLATFORM_BASE_URL,
     INFO_BASE_URL,
     INFO_GRAPG_QL_QUERY,
@@ -314,10 +315,11 @@ class Library:
 
     @reauth_on_fail
     async def get_image_cover(self, identifier: str, id_type: str):
+
         params = {
             "type": id_type,
             "identifiers": identifier,
-            "sizes": "small",
+            "sizes": "small,medium,large",
         }
         image_headers = {"Authorization": self.library_bearer_token}
         image_response = await self.session.get(
@@ -328,8 +330,22 @@ class Library:
             timeout=None,
         )
         image_response.raise_for_status()
-        image_json = image_response.json()[0]
-        return image_json["imageUrls"]["small"]["url"]
+        results = image_response.json()
+        if len(results) == 0:
+            LOGGER.debug("No image results found for title")
+            LOGGER.debug(image_response.request.__dict__)
+            return DEFAULT_IMAGE_URL
+        image_json = results[0]
+        image_urls = image_json["imageUrls"]
+        if "small" in image_urls.keys() and "url" in image_urls["small"].keys():
+            return image_json["imageUrls"]["small"]["url"]
+        if "medium" in image_urls.keys() and "url" in image_urls["medium"].keys():
+            return image_json["imageUrls"]["medium"]["url"]
+        if "large" in image_urls.keys() and "url" in image_urls["large"].keys():
+            return image_json["imageUrls"]["large"]["url"]
+        LOGGER.debug("No images returned for title")
+        LOGGER.debug(image_response.request.__dict__)
+        return DEFAULT_IMAGE_URL
 
     async def unpack_results(self, tasks):
         if len(tasks) == 0:
