@@ -37,7 +37,7 @@ class EreolenReservation:
             )
             self.description = look_up_data["description"]
             self.pickup_deadline = (
-                datetime.fromisoformat(reservation_data["pickupDeadline"]).date
+                datetime.fromisoformat(reservation_data["expireDateUtc"]).date
                 if reservation_data["expireDateUtc"] is not None
                 else None
             )
