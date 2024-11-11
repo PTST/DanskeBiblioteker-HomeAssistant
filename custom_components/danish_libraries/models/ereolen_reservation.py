@@ -36,6 +36,11 @@ class EreolenReservation:
                 else None
             )
             self.description = look_up_data["description"]
+            self.pickup_deadline = (
+                datetime.fromisoformat(reservation_data["pickupDeadline"]).date
+                if reservation_data["expireDateUtc"] is not None
+                else None
+            )
         except Exception as e:
             logger = logging.getLogger(__package__)
             logger.warning(

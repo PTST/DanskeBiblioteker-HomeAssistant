@@ -155,6 +155,7 @@ class EreolenReservationSensor(CoordinatorEntity, SensorEntity):
         self.reservations: list[EreolenReservation] = coordinator.data[
             "ereolen_reservations"
         ]
+        self.ready_for_pickup = [res for res in self.reservations if res.pickup_deadline is not None]
 
     @property
     def unique_id(self):
@@ -169,7 +170,7 @@ class EreolenReservationSensor(CoordinatorEntity, SensorEntity):
     @property
     def native_value(self) -> int | float | None:
         """Return the state of the entity."""
-        return 1
+        return len(self.ready_for_pickup)
 
     @property
     def extra_state_attributes(self) -> dict[str, int | float]:
