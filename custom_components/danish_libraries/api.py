@@ -146,7 +146,7 @@ class Library:
     async def get_profile_info(self) -> ProfileInfo:
         headers = {"Authorization": self.user_bearer_token}
         profile_response = await self.session.get(
-            f"{FBS_OPEN_PLATFORM_BASE_URL}/external/agencyid/patrons/patronid/v2",
+            f"{FBS_OPEN_PLATFORM_BASE_URL}/external/agencyid/patrons/patronid/v4",
             headers=headers,
             follow_redirects=True,
             timeout=None,
