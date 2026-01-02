@@ -16,7 +16,9 @@ from .const import (
     DEFAULT_IMAGE_URL,
     FBS_OPEN_PLATFORM_BASE_URL,
     INFO_BASE_URL,
-    INFO_GRAPG_QL_QUERY,
+    INFO_GRAPH_QL_QUERY,
+    IMAGE_FROM_PID_GRAPH_QL_QUERY,
+    SEARCH_ISBN_GRAPH_QL_QUERY,
     LIBRARIES,
     LOGGER,
     PUBHUB_BASE_URL,
@@ -250,7 +252,7 @@ class Library:
     async def get_info(self, identifier: str, original_object, output_type: type):
         headers = {"Authorization": self.user_bearer_token}
         body = {
-            "query": INFO_GRAPG_QL_QUERY,
+            "query": INFO_GRAPH_QL_QUERY,
             "variables": {"faust": identifier},
         }
         tasks = []
@@ -286,7 +288,7 @@ class Library:
                 self.municipality,
             )
 
-        image_url = await self.get_image_cover(pid, "pid")
+        image_url = await self.get_image_cover(pid)
         return output_type(
             original_object,
             info,
@@ -306,7 +308,8 @@ class Library:
         )
         info_response.raise_for_status()
         info = info_response.json()
-        image_url = await self.get_image_cover(identifier, "isbn")
+        pid = await self.convert_isbn_to_pid(identifier)
+        image_url = await self.get_image_cover(pid)
         return output_type(
             original_object,
             info["product"],
@@ -314,38 +317,70 @@ class Library:
         )
 
     @reauth_on_fail
-    async def get_image_cover(self, identifier: str, id_type: str):
+    async def convert_isbn_to_pid(self, isbn: str):
+        try:
+            payload = {
+                "query": SEARCH_ISBN_GRAPH_QL_QUERY,
+                "variables": {
+                    "cql": f"term.isbn={isbn}",
+                    "offset": 0,
+                    "limit": 1,
+                    "filters": {}
+                }
+            }
+            headers = {"Authorization": self.library_bearer_token}
+            response = await self.session.post(
+                    f"{INFO_BASE_URL}/fbcms-soeg/graphql",
+                    headers=headers,
+                    json=payload,
+                    follow_redirects=True,
+                    timeout=None,
+                )
+            response.raise_for_status()
+            return response.json()["data"]["complexSearch"]["works"][0]["manifestations"]["bestRepresentation"]["pid"]
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 401:
+                raise e
+        except Exception as e:
+            LOGGER.exception(e)
+        
 
-        params = {
-            "type": id_type,
-            "identifiers": identifier,
-            "sizes": "small,medium,large",
-        }
-        image_headers = {"Authorization": self.library_bearer_token}
-        image_response = await self.session.get(
-            f"{COVER_BASE_URL}/api/v2/covers",
-            headers=image_headers,
-            params=params,
-            follow_redirects=True,
-            timeout=None,
-        )
-        image_response.raise_for_status()
-        results = image_response.json()
-        if len(results) == 0:
-            LOGGER.debug("No image results found for title")
-            LOGGER.debug(image_response.request.__dict__)
-            return DEFAULT_IMAGE_URL
-        image_json = results[0]
-        image_urls = image_json["imageUrls"]
-        if "small" in image_urls.keys() and "url" in image_urls["small"].keys():
-            return image_json["imageUrls"]["small"]["url"]
-        if "medium" in image_urls.keys() and "url" in image_urls["medium"].keys():
-            return image_json["imageUrls"]["medium"]["url"]
-        if "large" in image_urls.keys() and "url" in image_urls["large"].keys():
-            return image_json["imageUrls"]["large"]["url"]
-        LOGGER.debug("No images returned for title")
-        LOGGER.debug(image_response.request.__dict__)
-        return DEFAULT_IMAGE_URL
+
+    @reauth_on_fail
+    async def get_image_cover(self, pid: str):
+        try:
+            payload = {
+                "query": IMAGE_FROM_PID_GRAPH_QL_QUERY,
+                "variables": {
+                    "pids": [pid]
+                }
+            }
+            image_headers = {"Authorization": self.library_bearer_token}
+            image_response = await self.session.post(
+                f"{INFO_BASE_URL}/fbcms-soeg/graphql",
+                headers=image_headers,
+                json=payload,
+                follow_redirects=True,
+                timeout=None,
+            )
+            image_response.raise_for_status()
+            image_url = None
+            image_urls = image_response.json()["data"]["manifestations"][0]["cover"]
+            if "small" in image_urls.keys() and "url" in image_urls["small"].keys():
+                image_url = image_urls["small"]["url"]
+            if "medium" in image_urls.keys() and "url" in image_urls["medium"].keys():
+                image_url = image_urls["medium"]["url"]
+            if "large" in image_urls.keys() and "url" in image_urls["large"].keys():
+                image_url = image_urls["large"]["url"]
+            if not image_url:
+                LOGGER.debug("No images returned for title")
+                LOGGER.debug(image_response.request.__dict__)
+            return DEFAULT_IMAGE_URL if not image_url else image_url
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 401:
+                raise e
+        except Exception as e:
+            LOGGER.exception(e)
 
     async def unpack_results(self, tasks):
         if len(tasks) == 0:
