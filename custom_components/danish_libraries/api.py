@@ -12,16 +12,15 @@ except ImportError:
 from .const import (
     COMMON_LOGIN_BASE_URL,
     COMMON_LOGIN_HEADERS,
-    COVER_BASE_URL,
     DEFAULT_IMAGE_URL,
     FBS_OPEN_PLATFORM_BASE_URL,
+    IMAGE_FROM_PID_GRAPH_QL_QUERY,
     INFO_BASE_URL,
     INFO_GRAPH_QL_QUERY,
-    IMAGE_FROM_PID_GRAPH_QL_QUERY,
-    SEARCH_ISBN_GRAPH_QL_QUERY,
     LIBRARIES,
     LOGGER,
     PUBHUB_BASE_URL,
+    SEARCH_ISBN_GRAPH_QL_QUERY,
 )
 from .models import EreolenLoan, EreolenReservation, Loan, ProfileInfo, Reservation
 
@@ -325,35 +324,33 @@ class Library:
                     "cql": f"term.isbn={isbn}",
                     "offset": 0,
                     "limit": 1,
-                    "filters": {}
-                }
+                    "filters": {},
+                },
             }
             headers = {"Authorization": self.library_bearer_token}
             response = await self.session.post(
-                    f"{INFO_BASE_URL}/fbcms-soeg/graphql",
-                    headers=headers,
-                    json=payload,
-                    follow_redirects=True,
-                    timeout=None,
-                )
+                f"{INFO_BASE_URL}/fbcms-soeg/graphql",
+                headers=headers,
+                json=payload,
+                follow_redirects=True,
+                timeout=None,
+            )
             response.raise_for_status()
-            return response.json()["data"]["complexSearch"]["works"][0]["manifestations"]["bestRepresentation"]["pid"]
+            return response.json()["data"]["complexSearch"]["works"][0][
+                "manifestations"
+            ]["bestRepresentation"]["pid"]
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 401:
                 raise e
         except Exception as e:
             LOGGER.exception(e)
-        
-
 
     @reauth_on_fail
     async def get_image_cover(self, pid: str):
         try:
             payload = {
                 "query": IMAGE_FROM_PID_GRAPH_QL_QUERY,
-                "variables": {
-                    "pids": [pid]
-                }
+                "variables": {"pids": [pid]},
             }
             image_headers = {"Authorization": self.library_bearer_token}
             image_response = await self.session.post(
