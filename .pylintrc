@@ -5,3 +5,6 @@ disable=missing-docstring,too-few-public-methods,missing-module-docstring,broad-
 [SIMILARITIES]
 min-similarity-lines = 25
 ignore-imports = true
+
+[main]
+max-branches=15
