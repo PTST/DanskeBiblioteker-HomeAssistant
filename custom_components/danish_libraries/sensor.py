@@ -39,7 +39,7 @@ class LoanSensor(CoordinatorEntity, SensorEntity):
     @property
     def loans(self) -> list[Loan]:
         return self.coordinator.data["loans"]
-    
+
     @property
     def next_due_loan(self) -> Loan | None:
         if len(self.loans) > 0:
@@ -84,16 +84,14 @@ class ReservationSensor(CoordinatorEntity, SensorEntity):
     @property
     def reservations(self) -> list[Reservation]:
         return self.coordinator.data["reservations"]
-    
+
     @property
     def ready_for_pickup(self) -> list[Reservation]:
-        data = [
-            res for res in self.reservations if res.pickup_deadline is not None
-        ]
+        data = [res for res in self.reservations if res.pickup_deadline is not None]
         if len(data) > 0:
             data.sort(key=lambda item: item.pickup_deadline)
         return data
-    
+
     @property
     def in_queue(self) -> list[Reservation]:
         data = [
@@ -104,13 +102,12 @@ class ReservationSensor(CoordinatorEntity, SensorEntity):
         if len(data) > 0:
             data.sort(key=lambda item: item.number_in_queue)
         return data
-    
+
     @property
     def next_in_queue(self) -> Reservation | None:
         if len(self.in_queue) > 0:
             return min(self.in_queue, key=lambda x: x.number_in_queue)
         return None
-
 
     @property
     def unique_id(self):
@@ -143,11 +140,11 @@ class EreolenLoanSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: LibraryCoordinator):
         super().__init__(coordinator)
         self.coordinator = coordinator
-    
+
     @property
     def profile_info(self) -> ProfileInfo:
         return self.coordinator.data["profile_info"]
-    
+
     @property
     def loans(self) -> list[EreolenLoan]:
         return self.coordinator.data["ereolen_loans"]
@@ -192,7 +189,7 @@ class EreolenReservationSensor(CoordinatorEntity, SensorEntity):
     @property
     def profile_info(self) -> ProfileInfo:
         return self.coordinator.data["profile_info"]
-    
+
     @property
     def reservations(self) -> list[EreolenReservation]:
         return self.coordinator.data["ereolen_reservations"]
