@@ -31,11 +31,20 @@ class LoanSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: LibraryCoordinator):
         super().__init__(coordinator)
         self.coordinator = coordinator
-        self.profile_info: ProfileInfo = coordinator.data["profile_info"]
-        self.loans: list[Loan] = coordinator.data["loans"]
-        self.next_due_loan = (
-            min(self.loans, key=lambda x: x.due_date) if len(self.loans) > 0 else None
-        )
+
+    @property
+    def profile_info(self) -> ProfileInfo:
+        return self.coordinator.data["profile_info"]
+
+    @property
+    def loans(self) -> list[Loan]:
+        return self.coordinator.data["loans"]
+
+    @property
+    def next_due_loan(self) -> Loan | None:
+        if len(self.loans) > 0:
+            return min(self.loans, key=lambda x: x.due_date)
+        return None
 
     @property
     def unique_id(self):
@@ -67,22 +76,38 @@ class ReservationSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: LibraryCoordinator):
         super().__init__(coordinator)
         self.coordinator = coordinator
-        self.profile_info: ProfileInfo = coordinator.data["profile_info"]
-        self.reservations: list[Reservation] = coordinator.data["reservations"]
-        self.next_in_queue: Reservation = None
-        self.ready_for_pickup = [
-            res for res in self.reservations if res.pickup_deadline is not None
-        ]
-        if len(self.ready_for_pickup) > 0:
-            self.ready_for_pickup.sort(key=lambda item: item.pickup_deadline)
-        self.in_queue = [
+
+    @property
+    def profile_info(self) -> ProfileInfo:
+        return self.coordinator.data["profile_info"]
+
+    @property
+    def reservations(self) -> list[Reservation]:
+        return self.coordinator.data["reservations"]
+
+    @property
+    def ready_for_pickup(self) -> list[Reservation]:
+        data = [res for res in self.reservations if res.pickup_deadline is not None]
+        if len(data) > 0:
+            data.sort(key=lambda item: item.pickup_deadline)
+        return data
+
+    @property
+    def in_queue(self) -> list[Reservation]:
+        data = [
             res
             for res in self.reservations
             if res.pickup_deadline is None and res.number_in_queue
         ]
+        if len(data) > 0:
+            data.sort(key=lambda item: item.number_in_queue)
+        return data
+
+    @property
+    def next_in_queue(self) -> Reservation | None:
         if len(self.in_queue) > 0:
-            self.in_queue.sort(key=lambda item: item.number_in_queue)
-            self.next_in_queue = min(self.in_queue, key=lambda x: x.number_in_queue)
+            return min(self.in_queue, key=lambda x: x.number_in_queue)
+        return None
 
     @property
     def unique_id(self):
@@ -115,11 +140,20 @@ class EreolenLoanSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: LibraryCoordinator):
         super().__init__(coordinator)
         self.coordinator = coordinator
-        self.profile_info: ProfileInfo = coordinator.data["profile_info"]
-        self.loans: list[EreolenLoan] = coordinator.data["ereolen_loans"]
-        self.next_due_loan = (
-            min(self.loans, key=lambda x: x.due_date) if len(self.loans) > 0 else None
-        )
+
+    @property
+    def profile_info(self) -> ProfileInfo:
+        return self.coordinator.data["profile_info"]
+
+    @property
+    def loans(self) -> list[EreolenLoan]:
+        return self.coordinator.data["ereolen_loans"]
+
+    @property
+    def next_due_loan(self) -> EreolenLoan | None:
+        if len(self.loans) > 0:
+            return min(self.loans, key=lambda x: x.due_date)
+        return None
 
     @property
     def unique_id(self):
@@ -151,10 +185,14 @@ class EreolenReservationSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: LibraryCoordinator):
         super().__init__(coordinator)
         self.coordinator = coordinator
-        self.profile_info: ProfileInfo = coordinator.data["profile_info"]
-        self.reservations: list[EreolenReservation] = coordinator.data[
-            "ereolen_reservations"
-        ]
+
+    @property
+    def profile_info(self) -> ProfileInfo:
+        return self.coordinator.data["profile_info"]
+
+    @property
+    def reservations(self) -> list[EreolenReservation]:
+        return self.coordinator.data["ereolen_reservations"]
 
     @property
     def unique_id(self):
