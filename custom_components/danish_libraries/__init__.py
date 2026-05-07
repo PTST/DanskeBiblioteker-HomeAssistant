@@ -1,9 +1,9 @@
 import homeassistant.helpers.config_validation as cv
+import voluptuous as vol
 from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry
-import voluptuous as vol
 
 from .const import DOMAIN, LOGGER
 from .coordinator import LibraryCoordinator
