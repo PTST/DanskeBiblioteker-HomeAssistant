@@ -108,6 +108,22 @@ After installing from hacs, setup can be started from this link:
 * Aalborg
 * Aarhus
 
+## Services
+### Renew loan:
+```yaml
+action: danish_libraries.renew_loan
+data:
+  target: sensor.patrick_toft_steffensen_library_loans_that_can_be_renewed
+  loan_id: "{loan_id from loan sensor attributes}"
+```
+
+### Renew all loans:
+```yaml
+action: danish_libraries.renew_all_loans
+data:
+  target: sensor.ptst_library_loans_that_can_be_renewed
+```
+
 ## Example cards
 ### Requirements:
 [lovelace-auto-entities](https://github.com/thomasloven/lovelace-auto-entities)    
