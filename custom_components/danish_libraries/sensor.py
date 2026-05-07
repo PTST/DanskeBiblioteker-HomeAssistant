@@ -20,6 +20,7 @@ async def async_setup_entry(
     coordinator: LibraryCoordinator = hass.data[DOMAIN][entry.entry_id]
     sensors: list[Entity] = [
         LoanSensor(coordinator),
+        CanBeRenewedSensor(coordinator),
         ReservationSensor(coordinator),
         EreolenLoanSensor(coordinator),
         EreolenReservationSensor(coordinator),
@@ -70,6 +71,23 @@ class LoanSensor(CoordinatorEntity, SensorEntity):
             ),
             "data": [loan.to_json() for loan in self.loans],
         }
+
+
+class CanBeRenewedSensor(LoanSensor):
+    @property
+    def unique_id(self):
+        uuid = f"{self.profile_info.patron_id}_library_loans_can_be_renewed"
+        return hashlib.sha1(uuid.encode("utf-8")).hexdigest()
+
+    @property
+    def name(self) -> str:
+        """Return the name of the entity."""
+        return f"{self.profile_info.name} library loans that can be renewed"
+
+    @property
+    def native_value(self) -> int | float | None:
+        """Return the state of the entity."""
+        return len([loan for loan in self.loans if loan.is_renewable])
 
 
 class ReservationSensor(CoordinatorEntity, SensorEntity):

@@ -1,0 +1,32 @@
+renew_loan:
+  name: Renew loan
+  description: Renew a specific loan
+  fields:
+    target:
+      name: Library
+      description: Select the library entity
+      required: false
+      selector:
+        entity:
+          domain: sensor
+          integration: danish_libraries
+    loan_id:
+      name: Loan ID
+      description: The loan ID to renew
+      required: true
+      example: "12345"
+      selector:
+        text:
+
+renew_all_loans:
+  name: Renew all loans
+  description: Renew all loans that can be renewed
+  fields:
+    target:
+      name: Library
+      description: Select the library entity
+      required: false
+      selector:
+        entity:
+          domain: sensor
+          integration: danish_libraries
