@@ -121,7 +121,6 @@ class Library:
             token_response.raise_for_status()
             token_text = token_response.text
 
-            LOGGER.debug(f"token response: {token_text}")
             self.user_token = re.search(r"\"user\",\s*\"(.*?)\"", token_text).group(1)
             self.library_token = re.search(
                 r"\"library\",\s*\"(.*?)\"", token_text

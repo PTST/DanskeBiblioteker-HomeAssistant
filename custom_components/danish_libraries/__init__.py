@@ -58,7 +58,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ent = ent_registry.entities.get(entity_id)
 
         if not ent or ent.platform != DOMAIN:
-            LOGGER.error(f"Entity {entity_id} not found or not from this integration")
+            LOGGER.error("Entity %s not found or not from this integration", entity_id)
             return
 
         entry_id = ent.config_entry_id
@@ -70,17 +70,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             if str(item.loan_id) == loan_id:
                 loan = item
                 break
-        LOGGER.debug([loan.to_json() for loan in coordinator.data.get("loans", [])])
+
         if loan is None:
-            LOGGER.error(f"Loan {loan_id} not found")
+            LOGGER.error("Loan with ID %s not found", str(loan_id))
             raise ValueError(f"Loan {loan_id} not found")
 
         try:
             await coordinator.library.renew_loan([loan])
-            LOGGER.info(f"Successfully renewed loan {loan_id}")
+            LOGGER.info("Successfully renewed loan %s", str(loan_id))
             await coordinator.async_request_refresh()
         except Exception as e:
-            LOGGER.error(f"Failed to renew loan: {e}")
+            LOGGER.error("Failed to renew loan", exc_info=True)
+            raise e
 
     async def async_renew_all_loans(call):
         target = call.data.get("target")
@@ -106,7 +107,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ent = ent_registry.entities.get(entity_id)
 
         if not ent or ent.platform != DOMAIN:
-            LOGGER.error(f"Entity {entity_id} not found or not from this integration")
+            LOGGER.error("Entity %s not found or not from this integration", entity_id)
             return
 
         entry_id = ent.config_entry_id
@@ -121,10 +122,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
         try:
             await coordinator.library.renew_loan(loans_to_renew)
-            LOGGER.info(f"Successfully renewed {len(loans_to_renew)} loans")
+            LOGGER.info("Successfully renewed %d loans", len(loans_to_renew))
             await coordinator.async_request_refresh()
         except Exception as e:
-            LOGGER.error(f"Failed to renew loans: {e}")
+            LOGGER.error("Failed to renew loans", exc_info=True)
+            raise e
 
     renew_loan_schema = vol.Schema(
         {
