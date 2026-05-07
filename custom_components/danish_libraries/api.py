@@ -64,7 +64,7 @@ class Library:
         self.municipality = LIBRARIES[municipality.lower()]
         self.user_id = user_id
         self.pin = pin
-        self.session = None
+        self.session: httpx.AsyncClient | None = None
         self.user_token = None
         self.library_token = None
         self.hass = hass
@@ -121,6 +121,7 @@ class Library:
             token_response.raise_for_status()
             token_text = token_response.text
 
+            LOGGER.debug(f"token response: {token_text}")
             self.user_token = re.search(r"\"user\",\s*\"(.*?)\"", token_text).group(1)
             self.library_token = re.search(
                 r"\"library\",\s*\"(.*?)\"", token_text
@@ -139,9 +140,8 @@ class Library:
             return await self.authenticate()
         except Exception as e:
             LOGGER.debug(e)
-            LOGGER.debug("Unknown error, retrying in 30sec", exc_info=True)
-            await asyncio.sleep(30)
-            return await self.authenticate()
+            LOGGER.error("Unknown error", exc_info=True)
+            raise e
 
     @reauth_on_fail
     async def get_profile_info(self) -> ProfileInfo:
@@ -378,6 +378,19 @@ class Library:
                 raise e
         except Exception as e:
             LOGGER.exception(e)
+
+    @reauth_on_fail
+    async def renew_loan(self, loans: list[Loan]):
+        headers = {"Authorization": self.user_bearer_token}
+        loan_ids = [loan.loan_id for loan in loans]
+        renew_response = await self.session.post(
+            f"{FBS_OPEN_PLATFORM_BASE_URL}/external/agencyid/patrons/patronid/loans/renew/v2",
+            headers=headers,
+            json=loan_ids,
+            follow_redirects=True,
+            timeout=None,
+        )
+        renew_response.raise_for_status()
 
     async def unpack_results(self, tasks):
         if len(tasks) == 0:
