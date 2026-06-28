@@ -32,7 +32,7 @@ COVER_BASE_URL = "https://cover.dandigbib.org"
 DEFAULT_SCAN_INTERVAL = timedelta(hours=4)
 DOMAIN = "danish_libraries"
 FBS_OPEN_PLATFORM_BASE_URL = "https://fbs-openplatform.dbc.dk"
-INFO_BASE_URL = "https://temp.fbi-api.dbc.dk"
+INFO_BASE_URL = "https://fbi-api.dbc.dk"
 INFO_GRAPH_QL_QUERY = "query getManifestationViaMaterialByFaust($faust: String!) { manifestation(faust: $faust) { titles { full } creators { display } abstract pid } }"
 IMAGE_FROM_PID_GRAPH_QL_QUERY = "query GetCoversByPids($pids: [String!]!) {manifestations(pid: $pids) {pid, cover {small {url} medium {url} large {url}}}}"
 SEARCH_ISBN_GRAPH_QL_QUERY = "query GetBestRepresentationPidByIsbn($cql: String!, $offset: Int!, $limit: PaginationLimitScalar!, $filters: ComplexSearchFiltersInput!) {complexSearch(cql: $cql, filters: $filters) {works(offset: $offset, limit: $limit) {workId manifestations {bestRepresentation {pid}}}}}"
