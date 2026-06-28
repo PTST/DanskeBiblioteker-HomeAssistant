@@ -253,20 +253,20 @@ class Library:
             "query": INFO_GRAPH_QL_QUERY,
             "variables": {"faust": identifier},
         }
-        tasks = []
         urls = [
             f"{INFO_BASE_URL}/fbcms-vis/graphql",
             f"{INFO_BASE_URL}/DDFCMS-VIS/graphql",
             f"{INFO_BASE_URL}/opac/graphql",
+            f"{INFO_BASE_URL}/next-present/graphql",
         ]
-        for url in urls:
-            tasks.append(
-                asyncio.get_event_loop().create_task(
-                    self.session.post(
-                        url, headers=headers, json=body, follow_redirects=False
-                    )
+        tasks = [
+            asyncio.get_event_loop().create_task(
+                self.session.post(
+                    url, headers=headers, json=body, follow_redirects=False
                 )
             )
+            for url in urls
+        ]
         pid = None
         info = None
         results: list[httpx.Response] = await self.unpack_results(tasks)
@@ -327,17 +327,46 @@ class Library:
                 },
             }
             headers = {"Authorization": self.library_bearer_token}
-            response = await self.session.post(
+            urls = [
                 f"{INFO_BASE_URL}/fbcms-soeg/graphql",
-                headers=headers,
-                json=payload,
-                follow_redirects=True,
-                timeout=None,
+                f"{INFO_BASE_URL}/next/graphql",
+            ]
+            tasks = [
+                asyncio.get_event_loop().create_task(
+                    self.session.post(
+                        url,
+                        headers=headers,
+                        json=payload,
+                        follow_redirects=False,
+                        timeout=None,
+                    )
+                )
+                for url in urls
+            ]
+            results: list[httpx.Response] = await self.unpack_results(tasks)
+            for response in results:
+                if response.status_code != 200:
+                    continue
+                data = (
+                    response.json()
+                    .get("data", {})
+                    .get("complexSearch", {})
+                    .get("works", [])
+                )
+                if not data or len(data) < 1 or data[0] is None:
+                    continue
+                pid = (
+                    data[0]
+                    .get("manifestations", {})
+                    .get("bestRepresentation", {})
+                    .get("pid")
+                )
+                if pid:
+                    return pid
+
+            raise ValueError(
+                f"Could not convert ISBN {isbn} to PID, maybe this municipality uses a new url. MUNICIPALITY={self.municipality}"
             )
-            response.raise_for_status()
-            return response.json()["data"]["complexSearch"]["works"][0][
-                "manifestations"
-            ]["bestRepresentation"]["pid"]
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 401:
                 raise e
@@ -346,37 +375,69 @@ class Library:
 
     @reauth_on_fail
     async def get_image_cover(self, pid: str):
+        if not pid:
+            return DEFAULT_IMAGE_URL
         try:
             payload = {
                 "query": IMAGE_FROM_PID_GRAPH_QL_QUERY,
                 "variables": {"pids": [pid]},
             }
             image_headers = {"Authorization": self.library_bearer_token}
-            image_response = await self.session.post(
+            cover_urls = [
                 f"{INFO_BASE_URL}/fbcms-soeg/graphql",
-                headers=image_headers,
-                json=payload,
-                follow_redirects=True,
-                timeout=None,
-            )
-            image_response.raise_for_status()
+                f"{INFO_BASE_URL}/next/graphql",
+            ]
+            tasks = [
+                asyncio.get_event_loop().create_task(
+                    self.session.post(
+                        url,
+                        headers=image_headers,
+                        json=payload,
+                        follow_redirects=False,
+                        timeout=None,
+                    )
+                )
+                for url in cover_urls
+            ]
+            results: list[httpx.Response] = await self.unpack_results(tasks)
+
+            for image_response in results:
+                if image_response.status_code != 200:
+                    continue
+                manifestations = (
+                    image_response.json().get("data", {}).get("manifestations", [])
+                )
+                if (
+                    not manifestations
+                    or len(manifestations) < 1
+                    or manifestations[0] is None
+                ):
+                    continue
+                image_urls = manifestations[0].get("cover", {})
+                if image_urls and any(
+                    size in image_urls for size in ["small", "medium", "large"]
+                ):
+                    break
+
+            if not image_urls:
+                LOGGER.debug("No images returned for title")
+                return DEFAULT_IMAGE_URL
+
             image_url = None
-            image_urls = image_response.json()["data"]["manifestations"][0]["cover"]
             if "small" in image_urls.keys() and "url" in image_urls["small"].keys():
                 image_url = image_urls["small"]["url"]
             if "medium" in image_urls.keys() and "url" in image_urls["medium"].keys():
                 image_url = image_urls["medium"]["url"]
             if "large" in image_urls.keys() and "url" in image_urls["large"].keys():
                 image_url = image_urls["large"]["url"]
-            if not image_url:
-                LOGGER.debug("No images returned for title")
-                LOGGER.debug(image_response.request.__dict__)
+
             return DEFAULT_IMAGE_URL if not image_url else image_url
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 401:
                 raise e
         except Exception as e:
             LOGGER.exception(e)
+            return DEFAULT_IMAGE_URL
 
     @reauth_on_fail
     async def renew_loan(self, loans: list[Loan]):
