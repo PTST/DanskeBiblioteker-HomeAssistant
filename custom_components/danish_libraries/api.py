@@ -423,6 +423,7 @@ class Library:
                 LOGGER.debug("No images returned for title")
                 return DEFAULT_IMAGE_URL
 
+            image_url = None
             if "small" in image_urls.keys() and "url" in image_urls["small"].keys():
                 image_url = image_urls["small"]["url"]
             if "medium" in image_urls.keys() and "url" in image_urls["medium"].keys():
