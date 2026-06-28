@@ -68,7 +68,7 @@ async def test_reservations():
     pin = os.getenv("LIBRARY_PIN")
     municipality = os.getenv("MUNICIPALITY")
     lib = Library(municipality, user, pin, None)
-    reservations : list[Reservation] = await lib.get_reservations()
+    reservations: list[Reservation] = await lib.get_reservations()
     assert reservations != None
     assert len(reservations) > 0
     assert isinstance(reservations[0], Reservation)

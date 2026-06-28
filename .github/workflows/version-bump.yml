@@ -27,14 +27,7 @@ jobs:
       - name: Read current manifest version
         id: current
         run: |
-          VERSION=$(python3 - <<'PY'
-import json
-from pathlib import Path
-path = Path('custom_components/danish_libraries/manifest.json')
-manifest = json.loads(path.read_text())
-print(manifest['version'])
-PY
-)
+          VERSION=$(python3 -c "import json, pathlib; p=pathlib.Path('custom_components/danish_libraries/manifest.json'); print(json.loads(p.read_text())['version'])")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Bump patch version
@@ -44,14 +37,7 @@ PY
           PATCH=$((PATCH + 1))
           NEW_VERSION="$MAJOR.$MINOR.$PATCH"
           echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
-          python3 - <<'PY'
-import json
-from pathlib import Path
-path = Path('custom_components/danish_libraries/manifest.json')
-manifest = json.loads(path.read_text())
-manifest['version'] = '${NEW_VERSION}'
-path.write_text(json.dumps(manifest, indent=4) + '\n')
-PY
+          python3 -c "import json, pathlib; p=pathlib.Path('custom_components/danish_libraries/manifest.json'); m=json.loads(p.read_text()); m['version'] = '${NEW_VERSION}'; p.write_text(json.dumps(m, indent=4) + '\n')"
 
       - name: Commit version bump
         run: |
