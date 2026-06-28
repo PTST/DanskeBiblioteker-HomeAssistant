@@ -320,17 +320,23 @@ class Library:
                 },
             }
             headers = {"Authorization": self.library_bearer_token}
-            response = await self.session.post(
+            urls = [
                 f"{INFO_BASE_URL}/fbcms-soeg/graphql",
-                headers=headers,
-                json=payload,
-                follow_redirects=True,
-                timeout=None,
-            )
-            response.raise_for_status()
-            return response.json()["data"]["complexSearch"]["works"][0][
-                "manifestations"
-            ]["bestRepresentation"]["pid"]
+                f"{INFO_BASE_URL}/next/graphql",
+            ]
+            tasks = [asyncio.get_event_loop().create_task(self.session.post(url, headers=headers, json=payload, follow_redirects=False, timeout=None)) for url in urls]
+            results: list[httpx.Response] = await self.unpack_results(tasks)
+            for response in results:
+                if response.status_code != 200:
+                    continue
+                data = response.json().get("data", {}).get("complexSearch", {}).get("works", [])
+                if not data or len(data) < 1 or data[0] is None:
+                    continue
+                pid = data[0].get("manifestations", {}).get("bestRepresentation", {}).get("pid")
+                if pid:
+                    return pid
+
+            raise ValueError(f"Could not convert ISBN {isbn} to PID, maybe this municipality uses a new url. MUNICIPALITY={self.municipality}")
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 401:
                 raise e
@@ -358,7 +364,7 @@ class Library:
                 if image_response.status_code != 200:
                     continue
                 manifestations = image_response.json().get("data", {}).get("manifestations", [])
-                if not manifestations:
+                if not manifestations or len(manifestations) < 1 or manifestations[0] is None:
                     continue
                 image_urls = manifestations[0].get("cover", {})
                 if image_urls and any(size in image_urls for size in ["small", "medium", "large"]):
