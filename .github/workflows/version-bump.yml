@@ -1,0 +1,67 @@
+name: Bump manifest version and create release tag
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'custom_components/danish_libraries/**'
+
+permissions:
+  contents: write
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Read current manifest version
+        id: current
+        run: |
+          VERSION=$(python3 - <<'PY'
+import json
+from pathlib import Path
+path = Path('custom_components/danish_libraries/manifest.json')
+manifest = json.loads(path.read_text())
+print(manifest['version'])
+PY
+)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Bump patch version
+        id: bump
+        run: |
+          IFS='.' read -r MAJOR MINOR PATCH <<< "${{ steps.current.outputs.version }}"
+          PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          python3 - <<'PY'
+import json
+from pathlib import Path
+path = Path('custom_components/danish_libraries/manifest.json')
+manifest = json.loads(path.read_text())
+manifest['version'] = '${NEW_VERSION}'
+path.write_text(json.dumps(manifest, indent=4) + '\n')
+PY
+
+      - name: Commit version bump
+        run: |
+          git add custom_components/danish_libraries/manifest.json
+          git commit -m "chore: bump version to ${{ steps.bump.outputs.new_version }}"
+
+      - name: Push bump commit
+        run: git push origin HEAD:main
+
+      - name: Create and push tag
+        run: |
+          git tag "v${{ steps.bump.outputs.new_version }}"
+          git push origin "v${{ steps.bump.outputs.new_version }}"
