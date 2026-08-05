@@ -43,6 +43,7 @@ class EreolenReservation:
                 json.dumps(reservation_data),
             )
             logger.warning(e, exc_info=True)
+            raise
 
     def to_json(self):
         return {

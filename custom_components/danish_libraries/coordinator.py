@@ -44,30 +44,18 @@ class LibraryCoordinator(DataUpdateCoordinator):
             LOGGER.debug("Updating data")
             tasks = []
             await self.library.authenticate()
-            tasks.append(asyncio.get_event_loop().create_task(self.library.get_loans()))
-            tasks.append(
-                asyncio.get_event_loop().create_task(self.library.get_profile_info())
-            )
+            tasks.append(asyncio.create_task(self.library.get_loans()))
+            tasks.append(asyncio.create_task(self.library.get_profile_info()))
             if self.entry.data[CONF_GET_RESERVATIONS]:
-                tasks.append(
-                    asyncio.get_event_loop().create_task(
-                        self.library.get_reservations()
-                    )
-                )
+                tasks.append(asyncio.create_task(self.library.get_reservations()))
             if self.entry.data[CONF_GET_EREOLEN]:
-                tasks.append(
-                    asyncio.get_event_loop().create_task(
-                        self.library.get_ereolen_loans()
-                    )
-                )
+                tasks.append(asyncio.create_task(self.library.get_ereolen_loans()))
             if (
                 self.entry.data[CONF_GET_EREOLEN]
                 and self.entry.data[CONF_GET_RESERVATIONS]
             ):
                 tasks.append(
-                    asyncio.get_event_loop().create_task(
-                        self.library.get_ereolen_reservations()
-                    )
+                    asyncio.create_task(self.library.get_ereolen_reservations())
                 )
             done, _ = await asyncio.wait(tasks, return_when="ALL_COMPLETED")
             for coroutine in done:

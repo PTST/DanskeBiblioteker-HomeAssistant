@@ -18,7 +18,9 @@ from .const import (
 
 
 class LibraryOptionsFlowHandler(OptionsFlow):
-    def __init__(self, entry: ConfigEntry) -> None:
+    def __init__(
+        self, entry: ConfigEntry
+    ) -> None:  # pylint: disable=super-init-not-called
         """Initialize options flow."""
         self.entry = entry
 
@@ -33,7 +35,6 @@ class LibraryOptionsFlowHandler(OptionsFlow):
             self.hass.config_entries.async_update_entry(
                 self.entry, data=user_input, options=self.entry.options
             )
-            self.async_abort(reason="configuration updated")
             return self.async_create_entry(title="", data={})
 
         default_get_ereolen = True
@@ -57,12 +58,14 @@ class LibraryOptionsFlowHandler(OptionsFlow):
         )
 
 
-class LibraryConfigFlowHandler(ConfigFlow, domain=DOMAIN):
+class LibraryConfigFlowHandler(
+    ConfigFlow, domain=DOMAIN
+):  # pylint: disable=abstract-method
     """Handle a config flow for Library."""
 
     VERSION = 1
 
-    def __init__(self):
+    def __init__(self):  # pylint: disable=super-init-not-called
         self.municipality = None
         self.user_id = None
         self.pin = None
