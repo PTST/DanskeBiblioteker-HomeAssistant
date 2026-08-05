@@ -2,6 +2,8 @@
 
 import hashlib
 
+from typing import Any
+
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -63,7 +65,7 @@ class LoanSensor(CoordinatorEntity, SensorEntity):
         return len(self.loans)
 
     @property
-    def extra_state_attributes(self) -> dict[str, int | float]:
+    def extra_state_attributes(self) -> dict[str, Any]:
         return {
             "type": "library_loan",
             "next_due_loan": (
@@ -89,6 +91,12 @@ class CanBeRenewedSensor(LoanSensor):
         """Return the state of the entity."""
         return len([loan for loan in self.loans if loan.is_renewable])
 
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        return {
+            "type": "library_loan_renewable",
+            "data": [loan.to_json() for loan in self.loans if loan.is_renewable],
+        }
 
 class ReservationSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: LibraryCoordinator):
