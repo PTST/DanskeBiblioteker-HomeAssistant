@@ -26,6 +26,16 @@ from .const import (
 from .models import EreolenLoan, EreolenReservation, Loan, ProfileInfo, Reservation
 
 
+def _log_response(label: str, response: httpx.Response) -> None:
+    LOGGER.debug(
+        "%s (status=%s, url=%s): %s",
+        label,
+        response.status_code,
+        response.request.url,
+        response.text,
+    )
+
+
 def reauth_on_fail(func):
     async def wrapper(*args, _retry_count=0):
         library: Library = args[0]
@@ -109,12 +119,20 @@ class Library:
                 self.municipality.url, follow_redirects=True, timeout=None
             )
             r.raise_for_status()
+            LOGGER.debug(
+                "Auth homepage response (status=%s, url=%s)", r.status_code, r.url
+            )
             login_page_request = await self.session.get(
                 f"{self.municipality.url}/login?current-path=/user/me/dashboard",
                 follow_redirects=True,
                 timeout=None,
             )
             login_page_request.raise_for_status()
+            LOGGER.debug(
+                "Auth login page response (status=%s, url=%s)",
+                login_page_request.status_code,
+                login_page_request.url,
+            )
             login_page_text = login_page_request.text
             login_path = re.search(r"action=\"(.*?)\"", login_page_text).group(1)
             common_login_url = f"{COMMON_LOGIN_BASE_URL}{login_path}"
@@ -132,12 +150,21 @@ class Library:
                 timeout=None,
             )
             r.raise_for_status()
+            LOGGER.debug(
+                "Auth login submit response (status=%s, url=%s)", r.status_code, r.url
+            )
             token_response = await self.session.get(
                 f"{self.municipality.url}/dpl-react/user-tokens",
                 follow_redirects=False,
                 timeout=None,
             )
             token_response.raise_for_status()
+            # Body intentionally not logged: it contains the live bearer tokens.
+            LOGGER.debug(
+                "Auth token response (status=%s, url=%s)",
+                token_response.status_code,
+                token_response.url,
+            )
             token_text = token_response.text
 
             self.user_token = re.search(r"\"user\",\s*\"(.*?)\"", token_text).group(1)
@@ -191,6 +218,7 @@ class Library:
             timeout=None,
         )
         profile_response.raise_for_status()
+        _log_response("Raw profile response", profile_response)
         return ProfileInfo(profile_response.json()["patron"])
 
     @reauth_on_fail
@@ -205,6 +233,7 @@ class Library:
             timeout=None,
         )
         fee_response.raise_for_status()
+        _log_response("Raw fees response", fee_response)
         return fee_response.json()
 
     @reauth_on_fail
@@ -217,6 +246,7 @@ class Library:
             timeout=None,
         )
         loans_response.raise_for_status()
+        _log_response("Raw loans response", loans_response)
         tasks = []
         for res in loans_response.json():
             tasks.append(
@@ -236,6 +266,7 @@ class Library:
             timeout=None,
         )
         loans_response.raise_for_status()
+        _log_response("Raw ereolen loans response", loans_response)
         tasks = []
         for res in loans_response.json()["loans"]:
             tasks.append(
@@ -257,6 +288,7 @@ class Library:
             timeout=None,
         )
         reservations_response.raise_for_status()
+        _log_response("Raw reservations response", reservations_response)
         tasks = []
         for res in reservations_response.json():
             tasks.append(
@@ -274,6 +306,7 @@ class Library:
             timeout=None,
         )
         reservations_response.raise_for_status()
+        _log_response("Raw ereolen reservations response", reservations_response)
         tasks = []
         for res in reservations_response.json()["reservations"]:
             tasks.append(
@@ -308,6 +341,7 @@ class Library:
         info = None
         results: list[httpx.Response] = await self.unpack_results(tasks)
         for res in results:
+            _log_response("Raw get_info response", res)
             if res.status_code != 200:
                 continue
             info = Library.get_nested_value(res.json(), ["data", "manifestation"])
@@ -342,6 +376,7 @@ class Library:
             timeout=None,
         )
         info_response.raise_for_status()
+        _log_response("Raw ereolen info response", info_response)
         info = info_response.json()
         pid = await self.convert_isbn_to_pid(identifier)
         image_url = await self.get_image_cover(pid)
@@ -382,6 +417,7 @@ class Library:
             ]
             results: list[httpx.Response] = await self.unpack_results(tasks)
             for response in results:
+                _log_response("Raw convert_isbn_to_pid response", response)
                 if response.status_code != 200:
                     continue
                 data = (
@@ -439,6 +475,7 @@ class Library:
             results: list[httpx.Response] = await self.unpack_results(tasks)
 
             for image_response in results:
+                _log_response("Raw get_image_cover response", image_response)
                 if image_response.status_code != 200:
                     continue
                 manifestations = (
@@ -488,6 +525,7 @@ class Library:
             timeout=None,
         )
         renew_response.raise_for_status()
+        _log_response("Raw renew_loan response", renew_response)
 
     async def unpack_results(self, tasks):
         if len(tasks) == 0:
