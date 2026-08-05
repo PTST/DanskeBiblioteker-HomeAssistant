@@ -41,6 +41,7 @@ class EreolenLoan:
                 json.dumps(loan_data),
             )
             logger.warning(e, exc_info=True)
+            raise
 
     def to_json(self):
         return {

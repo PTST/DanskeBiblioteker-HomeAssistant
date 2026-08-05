@@ -19,6 +19,7 @@ from .const import (
     INFO_GRAPH_QL_QUERY,
     LIBRARIES,
     LOGGER,
+    MAX_RETRIES,
     PUBHUB_BASE_URL,
     SEARCH_ISBN_GRAPH_QL_QUERY,
 )
@@ -26,7 +27,7 @@ from .models import EreolenLoan, EreolenReservation, Loan, ProfileInfo, Reservat
 
 
 def reauth_on_fail(func):
-    async def wrapper(*args):
+    async def wrapper(*args, _retry_count=0):
         library: Library = args[0]
         try:
             LOGGER.debug(func.__name__)
@@ -37,22 +38,40 @@ def reauth_on_fail(func):
             if e.response.status_code == 401:
                 await library.authenticate()
                 return await func(*args)
-            if e.response.status_code >= 500:
-                LOGGER.debug(e, exc_info=True)
-                LOGGER.debug("Unknown error, retrying in 30sec")
-                await asyncio.sleep(30)
-                return await func(*args)
-            raise e
+            if e.response.status_code < 500 or _retry_count >= MAX_RETRIES:
+                raise
+            LOGGER.debug(e, exc_info=True)
+            LOGGER.debug(
+                "Server error, retrying in 30sec (%s/%s)",
+                _retry_count + 1,
+                MAX_RETRIES,
+            )
+            await asyncio.sleep(30)
+            return await wrapper(*args, _retry_count=_retry_count + 1)
         except httpx.ConnectError as e:
+            if _retry_count >= MAX_RETRIES:
+                raise
             LOGGER.debug(e)
-            LOGGER.debug("Connect error, retrying in 30sec", exc_info=True)
+            LOGGER.debug(
+                "Connect error, retrying in 30sec (%s/%s)",
+                _retry_count + 1,
+                MAX_RETRIES,
+                exc_info=True,
+            )
             await asyncio.sleep(30)
-            return await func(*args)
+            return await wrapper(*args, _retry_count=_retry_count + 1)
         except Exception as e:
+            if _retry_count >= MAX_RETRIES:
+                raise
             LOGGER.debug(e)
-            LOGGER.debug("Unknown error, retrying in 30sec", exc_info=True)
+            LOGGER.debug(
+                "Unknown error, retrying in 30sec (%s/%s)",
+                _retry_count + 1,
+                MAX_RETRIES,
+                exc_info=True,
+            )
             await asyncio.sleep(30)
-            return await func(*args)
+            return await wrapper(*args, _retry_count=_retry_count + 1)
 
     return wrapper
 
@@ -77,7 +96,7 @@ class Library:
     def library_bearer_token(self):
         return f"Bearer {self.library_token}"
 
-    async def authenticate(self):
+    async def authenticate(self, _retry_count=0):
         try:
             LOGGER.debug("Authenticating")
             self.session = (
@@ -126,21 +145,41 @@ class Library:
                 r"\"library\",\s*\"(.*?)\"", token_text
             ).group(1)
         except httpx.HTTPStatusError as e:
-            if e.response.status_code >= 500:
-                LOGGER.debug(e, exc_info=True)
-                LOGGER.debug("Unknown error, retrying in 30sec")
-                await asyncio.sleep(30)
-                return await self.authenticate()
-            raise e
-        except httpx.ConnectError as e:
-            LOGGER.debug(e)
-            LOGGER.debug("Connect error, retrying in 30sec", exc_info=True)
+            if e.response.status_code < 500 or _retry_count >= MAX_RETRIES:
+                raise
+            LOGGER.debug(e, exc_info=True)
+            LOGGER.debug(
+                "Server error, retrying in 30sec (%s/%s)",
+                _retry_count + 1,
+                MAX_RETRIES,
+            )
             await asyncio.sleep(30)
-            return await self.authenticate()
-        except Exception as e:
+            return await self.authenticate(_retry_count=_retry_count + 1)
+        except httpx.ConnectError as e:
+            if _retry_count >= MAX_RETRIES:
+                raise
             LOGGER.debug(e)
-            LOGGER.error("Unknown error", exc_info=True)
-            raise e
+            LOGGER.debug(
+                "Connect error, retrying in 30sec (%s/%s)",
+                _retry_count + 1,
+                MAX_RETRIES,
+                exc_info=True,
+            )
+            await asyncio.sleep(30)
+            return await self.authenticate(_retry_count=_retry_count + 1)
+        except Exception as e:
+            if _retry_count >= MAX_RETRIES:
+                LOGGER.error("Unknown error", exc_info=True)
+                raise
+            LOGGER.debug(e)
+            LOGGER.debug(
+                "Unknown error, retrying in 30sec (%s/%s)",
+                _retry_count + 1,
+                MAX_RETRIES,
+                exc_info=True,
+            )
+            await asyncio.sleep(30)
+            return await self.authenticate(_retry_count=_retry_count + 1)
 
     @reauth_on_fail
     async def get_profile_info(self) -> ProfileInfo:
@@ -181,7 +220,7 @@ class Library:
         tasks = []
         for res in loans_response.json():
             tasks.append(
-                asyncio.get_event_loop().create_task(
+                asyncio.create_task(
                     self.get_info(res["loanDetails"]["recordId"], res, Loan)
                 )
             )
@@ -200,7 +239,7 @@ class Library:
         tasks = []
         for res in loans_response.json()["loans"]:
             tasks.append(
-                asyncio.get_event_loop().create_task(
+                asyncio.create_task(
                     self.get_ereolen_info(
                         res["libraryBook"]["identifier"], res, EreolenLoan
                     )
@@ -221,9 +260,7 @@ class Library:
         tasks = []
         for res in reservations_response.json():
             tasks.append(
-                asyncio.get_event_loop().create_task(
-                    self.get_info(res["recordId"], res, Reservation)
-                )
+                asyncio.create_task(self.get_info(res["recordId"], res, Reservation))
             )
         return await self.unpack_results(tasks)
 
@@ -240,7 +277,7 @@ class Library:
         tasks = []
         for res in reservations_response.json()["reservations"]:
             tasks.append(
-                asyncio.get_event_loop().create_task(
+                asyncio.create_task(
                     self.get_ereolen_info(res["identifier"], res, EreolenReservation)
                 )
             )
@@ -260,7 +297,7 @@ class Library:
             f"{INFO_BASE_URL}/next-present/graphql",
         ]
         tasks = [
-            asyncio.get_event_loop().create_task(
+            asyncio.create_task(
                 self.session.post(
                     url, headers=headers, json=body, follow_redirects=False
                 )
@@ -332,7 +369,7 @@ class Library:
                 f"{INFO_BASE_URL}/next/graphql",
             ]
             tasks = [
-                asyncio.get_event_loop().create_task(
+                asyncio.create_task(
                     self.session.post(
                         url,
                         headers=headers,
@@ -388,7 +425,7 @@ class Library:
                 f"{INFO_BASE_URL}/next/graphql",
             ]
             tasks = [
-                asyncio.get_event_loop().create_task(
+                asyncio.create_task(
                     self.session.post(
                         url,
                         headers=image_headers,
@@ -456,15 +493,18 @@ class Library:
         if len(tasks) == 0:
             return []
         done, _ = await asyncio.wait(tasks, return_when="ALL_COMPLETED")
+        results = []
         for x in done:
             if ex := x.exception():
                 LOGGER.exception(ex)
-        return [x.result() for x in done]
+                continue
+            results.append(x.result())
+        return results
 
     @staticmethod
     def get_nested_value(d: dict[str, any], keys: list[str]) -> any:
-        next_key = keys.pop(0)
+        next_key, *remaining_keys = keys
         value = d[next_key]
-        if len(keys) == 0 or value is None:
+        if len(remaining_keys) == 0 or value is None:
             return value
-        return Library.get_nested_value(value, keys)
+        return Library.get_nested_value(value, remaining_keys)

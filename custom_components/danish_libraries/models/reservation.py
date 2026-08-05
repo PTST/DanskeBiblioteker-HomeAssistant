@@ -28,6 +28,7 @@ class Reservation:
                 json.dumps(reservation_data),
             )
             logger.warning(e, exc_info=True)
+            raise
 
     @property
     def days_left_for_pickup(self):
