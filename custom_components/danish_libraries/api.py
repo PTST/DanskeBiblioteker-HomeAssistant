@@ -2,12 +2,22 @@ import asyncio
 import re
 
 try:
+    # Home Assistant 2026.11+ migrated its HTTP stack to httpx2 (a drop-in fork of
+    # httpx 0.28.1 with the same API). Aliased as httpx so the rest of the file is unchanged.
     # pylint: disable=invalid-name
-    from homeassistant.helpers.httpx_client import create_async_httpx_client, httpx
+    from homeassistant.helpers.httpx_client import (
+        create_async_httpx_client,
+        httpx2 as httpx,
+    )
 except ImportError:
-    import httpx
+    try:
+        # Home Assistant versions before 2026.11
+        from homeassistant.helpers.httpx_client import create_async_httpx_client, httpx
+    except ImportError:
+        # Running outside Home Assistant (standalone use)
+        import httpx
 
-    create_async_httpx_client = httpx.AsyncClient
+        create_async_httpx_client = httpx.AsyncClient
 
 from .const import (
     COMMON_LOGIN_BASE_URL,
